@@ -1,0 +1,204 @@
+{
+  "duration": 108500,
+  "scenes": [
+    {
+      "id": "hero",
+      "kind": "cinema",
+      "cinema": "hero",
+      "ms": 6000,
+      "chapter": "Welcome",
+      "line": "Welcome to TalentEdge. The future of assessments and AI interviewing.",
+      "title": "The future of assessments & AI interviewing",
+      "caption": "Welcome to the future of hiring."
+    },
+    {
+      "id": "why",
+      "kind": "cinema",
+      "cinema": "advantages",
+      "ms": 6500,
+      "chapter": "Welcome",
+      "line": "Upload a job description. AI builds the assessment and the interview. You publish, invite, and shortlist with evidence.",
+      "caption": "Hire with evidence, not guesswork.",
+      "cards": [
+        { "ico": "01", "title": "JD to live assessment", "copy": "AI reads the job and writes the questions.", "jump": "jd" },
+        { "ico": "02", "title": "Structured AI interviews", "copy": "Same role, now in a scored voice interview.", "jump": "aihub" },
+        { "ico": "03", "title": "Evidence-backed shortlist", "copy": "Scores, integrity, and the why — in one view.", "jump": "report" }
+      ]
+    },
+    {
+      "id": "hub",
+      "ms": 6000,
+      "chapter": "Create",
+      "line": "This is MeritEdge. Search, filter, and open any assessment from the table.",
+      "section": "meritedge",
+      "listView": "table",
+      "caption": "Intuitive assessment management",
+      "benefit": "Every role and candidate in one hiring workspace.",
+      "frame": "tilt-left",
+      "cursor": "[data-tour='create']",
+      "steps": ["Workspace", "Upload JD", "AI builds", "Publish"]
+    },
+    {
+      "id": "jd",
+      "ms": 7000,
+      "chapter": "Create",
+      "line": "Paste or drop the JD. Skills, duration, and questions come from that file.",
+      "wizard": "assessment",
+      "generator": true,
+      "caption": "Upload a job description",
+      "benefit": "That is the only input. AI builds the rest.",
+      "frame": "rise",
+      "cursor": "[data-tour='jd']",
+      "steps": ["Workspace", "Upload JD", "AI builds", "Publish"],
+      "stepOn": 1
+    },
+    {
+      "id": "creating",
+      "ms": 10000,
+      "chapter": "Create",
+      "line": "AI is creating the assessment from that JD. Then you publish.",
+      "wizard": "assessment",
+      "creating": true,
+      "caption": "Questions auto-generated",
+      "benefit": "Skills, duration, and the question bank — from one JD.",
+      "frame": "flat",
+      "steps": ["Workspace", "Upload JD", "AI builds", "Publish"],
+      "stepOn": 2
+    },
+    {
+      "id": "publish",
+      "ms": 6500,
+      "chapter": "Create",
+      "line": "Review and publish. The assessment from the JD is ready.",
+      "wizard": "assessment",
+      "wizStep": 4,
+      "jdShow": true,
+      "caption": "Go live in one click",
+      "benefit": "Published to MeritEdge. Invite yourself next.",
+      "frame": "tilt-right",
+      "cursor": ".mew-cta",
+      "steps": ["Workspace", "Upload JD", "AI builds", "Publish"],
+      "stepOn": 3
+    },
+    {
+      "id": "dash",
+      "ms": 7000,
+      "chapter": "Shortlist",
+      "line": "This is the assessment dashboard. Invite candidates, watch completion, and shortlist scores.",
+      "open": "assessment",
+      "caption": "Smart candidate matching",
+      "benefit": "Maya Chen 92. Jordan Rivera 87. Shortlist without another screen.",
+      "frame": "ken",
+      "cursor": "[data-tour='dashboard']",
+      "floats": [
+        { "type": "ring", "value": "92", "label": "Maya Chen", "x": "78%", "y": "18%" },
+        { "type": "note", "title": "Shortlisted", "copy": "2 ready for AI Interview", "x": "6%", "y": "72%" }
+      ]
+    },
+    {
+      "id": "insight",
+      "kind": "cinema",
+      "cinema": "insight",
+      "ms": 5500,
+      "chapter": "Shortlist",
+      "line": "MeritEdge ninety-two. AI Interviewer four point eight. One candidate, both signals.",
+      "caption": "AI Interviewer insights",
+      "benefit": "See who stands out before the next round."
+    },
+    {
+      "id": "aihub",
+      "ms": 5500,
+      "chapter": "Interview",
+      "line": "AI Interviewer. Same candidates, now in structured voice interviews.",
+      "section": "ai-interviewer",
+      "listView": "table",
+      "caption": "Comprehensive interview analytics",
+      "benefit": "Voice interviews with scores, integrity, and a recommendation.",
+      "frame": "tilt-left",
+      "cursor": "[data-tour='create']"
+    },
+    {
+      "id": "aijd",
+      "ms": 6500,
+      "chapter": "Interview",
+      "line": "Upload a JD. AI Interviewer builds the interview from that job description.",
+      "wizard": "interview",
+      "wizStep": 0,
+      "generator": true,
+      "caption": "MeritEdge assessment setup — now for interviews",
+      "benefit": "Same first move. Drop a JD. AI writes the topics.",
+      "frame": "rise",
+      "cursor": "[data-tour='jd']"
+    },
+    {
+      "id": "aicreate",
+      "ms": 9000,
+      "chapter": "Interview",
+      "line": "AI is creating the interview from the JD. Topics and persona are filled.",
+      "wizard": "interview",
+      "creating": true,
+      "caption": "Questions auto-generated",
+      "benefit": "Topics, skills, and persona — ready to publish.",
+      "frame": "flat"
+    },
+    {
+      "id": "aidash",
+      "ms": 6500,
+      "chapter": "Interview",
+      "line": "The interview dashboard. Scores, integrity, and Invite yourself.",
+      "open": "interview",
+      "caption": "Automated candidate grading",
+      "benefit": "Integrity beside the score. Invite yourself in one click.",
+      "frame": "tilt-right",
+      "cursor": "[data-tour='dashboard']",
+      "floats": [
+        { "type": "ring", "value": "4.8", "label": "Strong match", "x": "76%", "y": "20%" }
+      ]
+    },
+    {
+      "id": "report",
+      "ms": 7000,
+      "chapter": "Interview",
+      "line": "Open a completed session. Score, topics, and the answer sit on the report.",
+      "open": "report",
+      "caption": "Intelligent results dashboard",
+      "benefit": "Evidence, skill gaps, and proctoring — one candidate view.",
+      "frame": "ken"
+    },
+    {
+      "id": "dual",
+      "kind": "cinema",
+      "cinema": "dual",
+      "ms": 6500,
+      "chapter": "Explore",
+      "line": "Assessment and interview, side by side. Create once. Read both scores.",
+      "caption": "Questions auto-generated",
+      "benefit": "MeritEdge and AI Interviewer from the same JD."
+    },
+    {
+      "id": "mosaic",
+      "kind": "cinema",
+      "cinema": "mosaic",
+      "ms": 5500,
+      "chapter": "Explore",
+      "line": "Dashboards, reports, and shortlists stay in one workspace so the team can move.",
+      "caption": "Intelligent results dashboard",
+      "benefit": "The hiring picture, not another spreadsheet."
+    },
+    {
+      "id": "cta",
+      "kind": "cinema",
+      "cinema": "cta",
+      "ms": 7500,
+      "chapter": "Explore",
+      "line": "Experience smarter assessments. Discover AI-powered interviews. Try it yourself — no payment to create.",
+      "title": "Experience smarter assessments. Discover AI-powered interviews.",
+      "caption": "Explore the platform"
+    }
+  ],
+  "ticker": [
+    "Maya Chen scored 92 on Senior Product Designer · MeritEdge",
+    "Kenji Sato 4.8/5 in AI Interviewer · Strong match",
+    "Two candidates shortlisted in the last few seconds"
+  ]
+}

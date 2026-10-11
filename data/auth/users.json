@@ -1,0 +1,30 @@
+[
+  {
+    "email": "admin@demo.com",
+    "name": "Dana Admin",
+    "company": "Northwind Talent",
+    "kind": "sales",
+    "plan": "sales",
+    "credits": 500,
+    "daysLeft": null,
+    "source": "manual",
+    "utm": null,
+    "org": "Northwind Org",
+    "created": true,
+    "inviteCode": "NORTH20"
+  },
+  {
+    "email": "alex@acme.com",
+    "name": "Alex Morgan",
+    "company": "Acme",
+    "kind": "trial",
+    "plan": "trial",
+    "credits": 18,
+    "daysLeft": 11,
+    "source": "pilot",
+    "utm": "sales_assist",
+    "org": "Acme Org",
+    "created": true,
+    "inviteCode": "ACME20"
+  }
+]

@@ -1,0 +1,222 @@
+[
+  {
+    "id": "a1",
+    "title": "Senior Product Designer",
+    "status": "Active",
+    "duration": "45 min",
+    "created": "28 Sep 2026",
+    "invited": 5,
+    "completed": 4,
+    "shortlisted": 2,
+    "role": "Senior Product Designer",
+    "passing": 70,
+    "qcount": 12,
+    "sections": 2,
+    "createdBy": "Priya",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c1",
+        "name": "Maya Chen",
+        "email": "maya@example.com",
+        "score": 92,
+        "status": "Shortlisted",
+        "skills": "Product thinking · Portfolio"
+      },
+      {
+        "id": "c2",
+        "name": "Jordan Rivera",
+        "email": "jordan@example.com",
+        "score": 87,
+        "status": "Shortlisted",
+        "skills": "Systems design · Craft"
+      },
+      {
+        "id": "c3",
+        "name": "Sam Ortiz",
+        "email": "sam@example.com",
+        "score": 71,
+        "status": "Completed",
+        "skills": "Visual design"
+      },
+      {
+        "id": "c4",
+        "name": "Priya Nair",
+        "email": "priya@example.com",
+        "score": 64,
+        "status": "Completed",
+        "skills": "Research"
+      }
+    ]
+  },
+  {
+    "id": "a2",
+    "title": "Software Engineer",
+    "status": "Active",
+    "duration": "60 min",
+    "created": "1 Oct 2026",
+    "invited": 4,
+    "completed": 3,
+    "shortlisted": 1,
+    "role": "Software Engineer",
+    "passing": 70,
+    "qcount": 18,
+    "sections": 3,
+    "createdBy": "Priya",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c5",
+        "name": "Kenji Sato",
+        "email": "kenji@example.com",
+        "score": 88,
+        "status": "Shortlisted",
+        "skills": "Backend · System design"
+      },
+      {
+        "id": "c6",
+        "name": "Lila Bose",
+        "email": "lila@example.com",
+        "score": 79,
+        "status": "Completed",
+        "skills": "Frontend · Testing"
+      },
+      {
+        "id": "c7",
+        "name": "Omar Haddad",
+        "email": "omar@example.com",
+        "score": 61,
+        "status": "Completed",
+        "skills": "SQL · APIs"
+      }
+    ]
+  },
+  {
+    "id": "a3",
+    "title": "Frontend Engineer",
+    "status": "Active",
+    "duration": "50 min",
+    "created": "2 Oct 2026",
+    "invited": 3,
+    "completed": 2,
+    "shortlisted": 1,
+    "role": "Frontend Engineer",
+    "passing": 70,
+    "qcount": 14,
+    "sections": 2,
+    "createdBy": "Priya",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c8",
+        "name": "Asha Rao",
+        "email": "asha@example.com",
+        "score": 90,
+        "status": "Shortlisted",
+        "skills": "React · CSS"
+      },
+      {
+        "id": "c9",
+        "name": "Ben Cole",
+        "email": "ben@example.com",
+        "score": 76,
+        "status": "Completed",
+        "skills": "Accessibility"
+      }
+    ]
+  },
+  {
+    "id": "a5",
+    "title": "Data Analyst",
+    "status": "Active",
+    "duration": "45 min",
+    "created": "4 Oct 2026",
+    "invited": 3,
+    "completed": 2,
+    "shortlisted": 1,
+    "role": "Data Analyst",
+    "passing": 70,
+    "qcount": 12,
+    "sections": 2,
+    "createdBy": "Priya",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c12",
+        "name": "Ivy Tan",
+        "email": "ivy@example.com",
+        "score": 89,
+        "status": "Shortlisted",
+        "skills": "SQL · Metrics"
+      },
+      {
+        "id": "c13",
+        "name": "Paul Ng",
+        "email": "paul@example.com",
+        "score": 72,
+        "status": "Completed",
+        "skills": "Funnels"
+      }
+    ]
+  },
+  {
+    "id": "a7",
+    "title": "Customer Success Manager",
+    "status": "Active",
+    "duration": "40 min",
+    "created": "30 Sep 2026",
+    "invited": 4,
+    "completed": 3,
+    "shortlisted": 1,
+    "role": "Customer Success Manager",
+    "passing": 70,
+    "qcount": 10,
+    "sections": 2,
+    "createdBy": "Priya",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c15",
+        "name": "Elena Voss",
+        "email": "elena@example.com",
+        "score": 84,
+        "status": "Shortlisted",
+        "skills": "Renewals"
+      },
+      {
+        "id": "c16",
+        "name": "Mark Adeyemi",
+        "email": "mark@example.com",
+        "score": 69,
+        "status": "Completed",
+        "skills": "Onboarding"
+      }
+    ]
+  },
+  {
+    "id": "a8",
+    "title": "Sales Account Executive",
+    "status": "Active",
+    "duration": "40 min",
+    "created": "1 Oct 2026",
+    "invited": 3,
+    "completed": 2,
+    "shortlisted": 1,
+    "role": "Sales Account Executive",
+    "passing": 70,
+    "qcount": 10,
+    "sections": 2,
+    "createdBy": "Priya",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c17",
+        "name": "Chris Patel",
+        "email": "chris@example.com",
+        "score": 82,
+        "status": "Shortlisted",
+        "skills": "Discovery"
+      }
+    ]
+  }
+]

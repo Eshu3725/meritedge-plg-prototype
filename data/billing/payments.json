@@ -1,0 +1,103 @@
+{
+  "methods": [
+    {
+      "id": "upi",
+      "label": "UPI",
+      "icon": "⌁",
+      "hint": "GPay, PhonePe, Paytm, BHIM"
+    },
+    {
+      "id": "card",
+      "label": "Cards",
+      "icon": "▣",
+      "hint": "Visa, Mastercard, RuPay, Amex"
+    },
+    {
+      "id": "netbanking",
+      "label": "Net banking",
+      "icon": "🏦",
+      "hint": "HDFC, SBI, ICICI, Axis, Kotak"
+    },
+    {
+      "id": "wallet",
+      "label": "Wallets",
+      "icon": "◇",
+      "hint": "PhonePe, Paytm, Amazon Pay"
+    },
+    {
+      "id": "paylater",
+      "label": "Pay later",
+      "icon": "◷",
+      "hint": "Simpl, LazyPay, Flipkart Pay Later"
+    }
+  ],
+  "banks": [
+    "HDFC Bank",
+    "State Bank of India",
+    "ICICI Bank",
+    "Axis Bank",
+    "Kotak Mahindra"
+  ],
+  "wallets": [
+    "PhonePe",
+    "Paytm",
+    "Amazon Pay"
+  ],
+  "payLater": [
+    "Simpl",
+    "LazyPay",
+    "Flipkart Pay Later"
+  ],
+  "checkoutSteps": [
+    {
+      "id": "order",
+      "label": "Checkout"
+    },
+    {
+      "id": "methods",
+      "label": "Method"
+    },
+    {
+      "id": "details",
+      "label": "Details"
+    },
+    {
+      "id": "auth",
+      "label": "Authorize"
+    },
+    {
+      "id": "processing",
+      "label": "Processing"
+    },
+    {
+      "id": "result",
+      "label": "Result"
+    },
+    {
+      "id": "return",
+      "label": "Return"
+    }
+  ],
+  "emails": [
+    {
+      "id": "receipt-email",
+      "label": "Receipt"
+    },
+    {
+      "id": "plan-email",
+      "label": "Plan confirmation"
+    },
+    {
+      "id": "renewal-email",
+      "label": "Renewal receipt"
+    },
+    {
+      "id": "recovery",
+      "label": "Payment reminder"
+    },
+    {
+      "id": "failed-email",
+      "label": "Payment failed"
+    }
+  ]
+}

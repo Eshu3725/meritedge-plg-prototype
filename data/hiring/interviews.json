@@ -1,0 +1,170 @@
+[
+  {
+    "id": "i1",
+    "title": "Senior Product Designer · AI Interview",
+    "role": "Senior Product Designer",
+    "assessmentId": "a1",
+    "status": "Active",
+    "duration": "25 min",
+    "invited": 2,
+    "completed": 2,
+    "created": "2 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c1",
+        "name": "Maya Chen",
+        "email": "maya@example.com",
+        "score": "4.8/5",
+        "rec": "Strong match",
+        "status": "Completed",
+        "note": "Strong assessment performance and thoughtful tradeoffs. Explore collaboration style and product strategy in the next round."
+      },
+      {
+        "id": "c2",
+        "name": "Jordan Rivera",
+        "email": "jordan@example.com",
+        "score": "4.3/5",
+        "rec": "Recommend",
+        "status": "Completed",
+        "note": "Clear systems thinking. Probe product judgment in a team conversation."
+      }
+    ]
+  },
+  {
+    "id": "i2",
+    "title": "Software Engineer · AI Interview",
+    "role": "Software Engineer",
+    "assessmentId": "a2",
+    "status": "Active",
+    "duration": "30 min",
+    "invited": 2,
+    "completed": 1,
+    "created": "4 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c5",
+        "name": "Kenji Sato",
+        "email": "kenji@example.com",
+        "score": "4.5/5",
+        "rec": "Strong match",
+        "status": "Completed",
+        "note": "Solid system-design tradeoffs. Move to a hiring-manager round."
+      },
+      {
+        "id": "c6",
+        "name": "Lila Bose",
+        "email": "lila@example.com",
+        "score": "—",
+        "rec": "In progress",
+        "status": "In progress",
+        "note": "Interview started. Insights will appear when the session completes."
+      }
+    ]
+  },
+  {
+    "id": "i3",
+    "title": "Frontend Engineer · AI Interview",
+    "role": "Frontend Engineer",
+    "assessmentId": "a3",
+    "status": "Active",
+    "duration": "25 min",
+    "invited": 2,
+    "completed": 1,
+    "created": "5 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c8",
+        "name": "Asha Rao",
+        "email": "asha@example.com",
+        "score": "4.6/5",
+        "rec": "Strong match",
+        "status": "Completed",
+        "note": "Strong UI judgment."
+      }
+    ]
+  },
+  {
+    "id": "i5",
+    "title": "Data Analyst · AI Interview",
+    "role": "Data Analyst",
+    "assessmentId": "a5",
+    "status": "Active",
+    "duration": "25 min",
+    "invited": 2,
+    "completed": 1,
+    "created": "6 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "tech",
+    "candidates": [
+      {
+        "id": "c12",
+        "name": "Ivy Tan",
+        "email": "ivy@example.com",
+        "score": "4.7/5",
+        "rec": "Strong match",
+        "status": "Completed",
+        "note": "Metric definitions were precise."
+      }
+    ]
+  },
+  {
+    "id": "i7",
+    "title": "Customer Success Manager · AI Interview",
+    "role": "Customer Success Manager",
+    "assessmentId": "a7",
+    "status": "Active",
+    "duration": "25 min",
+    "invited": 2,
+    "completed": 1,
+    "created": "4 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c15",
+        "name": "Elena Voss",
+        "email": "elena@example.com",
+        "score": "4.2/5",
+        "rec": "Recommend",
+        "status": "Completed",
+        "note": "Calm under renewal pressure."
+      }
+    ]
+  },
+  {
+    "id": "i8",
+    "title": "Sales Account Executive · AI Interview",
+    "role": "Sales Account Executive",
+    "assessmentId": "a8",
+    "status": "Active",
+    "duration": "25 min",
+    "invited": 1,
+    "completed": 1,
+    "created": "4 Oct 2026",
+    "createdBy": "Priya",
+    "interviewer": "Alex",
+    "track": "nontech",
+    "candidates": [
+      {
+        "id": "c17",
+        "name": "Chris Patel",
+        "email": "chris@example.com",
+        "score": "4.1/5",
+        "rec": "Recommend",
+        "status": "Completed",
+        "note": "Discovery questions were sharp."
+      }
+    ]
+  }
+]

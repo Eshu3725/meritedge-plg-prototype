@@ -1,0 +1,50 @@
+{
+  "roles": [
+    {
+      "id": "Senior Product Designer",
+      "copy": "Product thinking and craft"
+    },
+    {
+      "id": "Software Engineer",
+      "copy": "Backend, frontend, and system design"
+    },
+    {
+      "id": "Customer Success Manager",
+      "copy": "Judgment, communication, and ownership"
+    }
+  ],
+  "volumes": [
+    {
+      "id": "few",
+      "label": "A few hires",
+      "copy": "One or two roles this quarter"
+    },
+    {
+      "id": "weekly",
+      "label": "Hiring every week",
+      "copy": "Ongoing requisitions in TalentEdge"
+    },
+    {
+      "id": "campus",
+      "label": "Campus / volume",
+      "copy": "Many candidates on the same MeritEdge path"
+    }
+  ],
+  "products": [
+    {
+      "id": "both",
+      "label": "MeritEdge + AI Interviewer",
+      "copy": "Assess, then interview the same people"
+    },
+    {
+      "id": "assess",
+      "label": "MeritEdge only",
+      "copy": "Skills assessments and a ranked shortlist"
+    },
+    {
+      "id": "interview",
+      "label": "AI Interviewer only",
+      "copy": "Structured interview evidence"
+    }
+  ]
+}

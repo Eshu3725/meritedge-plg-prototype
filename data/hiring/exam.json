@@ -1,0 +1,175 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "q": "Your product team needs to add a new optional field and change the semantics of an existing field (renaming and changing its meaning) for a widely-used REST endpoint. As a mid-level backend engineer collaborating with frontend teams, what approach best minimizes client breakage while delivering the change?",
+      "opts": [
+        {
+          "k": "A",
+          "t": "Add the new optional field and modify the existing field in-place; document the change and rely on frontend teams to update"
+        },
+        {
+          "k": "B",
+          "t": "Introduce the changes behind a feature flag on the backend and flip it on globally without informing frontends"
+        },
+        {
+          "k": "C",
+          "t": "Create a new API version (e.g., /v2/resource) for the breaking semantic change; keep adding optional fields to the current version without a new version"
+        },
+        {
+          "k": "D",
+          "t": "Remove the old field immediately and replace it with the new one at the same endpoint; return 410 Gone for old semantics"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "q": "You're building a Python FastAPI microservice that creates billing charges for customers. Clients can retry POST requests if they don't get a response, and your service runs many replicas behind a load balancer. You need to guarantee that logically-duplicate retries do not create duplicate charge rows in PostgreSQL (exactly-once semantics for a request), with reasonable latency and correctness under failover. Which server-side design provides the most robust, production-grade solution?",
+      "opts": [
+        {
+          "k": "A",
+          "t": "Make the endpoint a PUT /charges/{client_id} where the client_id is the idempotent identifier supplied by the client; this is simpler and avoids any server-side storage of keys"
+        },
+        {
+          "k": "B",
+          "t": "Use Redis to store seen request hashes with a TTL. On a retry check Redis first and skip creating a duplicate charge if found; Redis is fast and avoids touching PostgreSQL for deduplication"
+        },
+        {
+          "k": "C",
+          "t": "Require clients to send a client-generated idempotency key header. Persist that key alongside the created Charge in PostgreSQL with a unique constraint and use an atomic INSERT … ON CONFLICT to return the existing row"
+        },
+        {
+          "k": "D",
+          "t": "Keep the API as-is and rely on the message broker (e.g., RabbitMQ) to deduplicate messages before processing by the charge creation worker"
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "q": "Your company exposes a public REST API consumed by many external clients. You plan a breaking change to an endpoint used in production. For a pragmatic mid-level backend engineer responsible for API compatibility, which versioning strategy should you adopt?",
+      "opts": [
+        {
+          "k": "A",
+          "t": "Introduce a new major version in the URI (e.g., /v2/) for the breaking change and maintain /v1/ until clients migrate"
+        },
+        {
+          "k": "B",
+          "t": "Keep the endpoint URI identical but change the response format; ask clients to use a custom header X-Client-Version"
+        },
+        {
+          "k": "C",
+          "t": "Only document the change and rely on clients to adapt without versioning; use feature negotiation via Accept header later"
+        },
+        {
+          "k": "D",
+          "t": "Use the same URI and add a query parameter ?version=2 to distinguish versions for backward compatibility"
+        }
+      ],
+      "tab": true
+    }
+  ],
+  "turns": [
+    {
+      "ai": "Hi {first}, I'm Alex, and I'll be running this interview with you today. Could you introduce yourself and walk me through what you've been working on most recently, just a minute or two, with a focus on your projects and responsibilities?",
+      "you": "Yeah sure. My name is {name}. I recently completed a project related to attendance management and I'm comfortable talking through Python basics and data structures."
+    },
+    {
+      "ai": "Thanks, that's a nice concrete starting point. Let's get into Python basics: can you explain the difference between a list and a tuple in Python, and when you'd choose one over the other?",
+      "you": "A list is mutable — you can append and update. A tuple is immutable, so I use it for fixed records or as a dict key."
+    },
+    {
+      "ai": "How would you find the maximum number in a list in Python, and how would you think through it step by step?",
+      "you": "I'd walk the list once, keep a running max, then mention max(nums) as the built-in shortcut once the algorithm is clear."
+    }
+  ],
+  "voices": [
+    [
+      1,
+      "Voice 1",
+      "FEMALE",
+      "Balanced and versatile"
+    ],
+    [
+      2,
+      "Voice 2",
+      "MALE",
+      "Grounded and professional"
+    ],
+    [
+      3,
+      "Voice 3",
+      "MALE",
+      "Warm and expressive"
+    ],
+    [
+      4,
+      "Voice 4",
+      "FEMALE",
+      "Clear and approachable"
+    ],
+    [
+      5,
+      "Voice 5",
+      "MALE",
+      "Crisp and articulate"
+    ],
+    [
+      6,
+      "Voice 6",
+      "MALE",
+      "Confident and composed"
+    ],
+    [
+      7,
+      "Voice 7",
+      "FEMALE",
+      "Bright and friendly"
+    ],
+    [
+      8,
+      "Voice 8",
+      "MALE",
+      "Dynamic and engaging"
+    ],
+    [
+      9,
+      "Voice 9",
+      "FEMALE",
+      "Smooth and conversational"
+    ]
+  ],
+  "photos": [
+    [
+      "#7c3aed",
+      "AM"
+    ],
+    [
+      "#2563eb",
+      "MC"
+    ],
+    [
+      "#059669",
+      "JR"
+    ],
+    [
+      "#ea580c",
+      "PN"
+    ],
+    [
+      "#db2777",
+      "KS"
+    ],
+    [
+      "#0891b2",
+      "LB"
+    ],
+    [
+      "#4f46e5",
+      "SO"
+    ],
+    [
+      "#ca8a04",
+      "DC"
+    ]
+  ]
+}

@@ -1,0 +1,203 @@
+<div id="view-landing" class="view">
+<div class="wrap">
+<header class="nav"><button class="brand" onclick="showView('landing')"><img class="brand-logo" src="assets/otomeyt-ai-logo-light.svg" alt="Otomeyt AI"></button><nav class="navlinks"><a href="#how">How it works</a><button class="ghost" style="border:0;padding:0;font:inherit;color:inherit" onclick="showView('plans')">Plans</button><a href="#products">MeritEdge + AI Interviewer</a><button class="ghost" onclick="showView('login')">Log in</button><button class="navcta" onclick="startFlow()">Start free <span>↗</span></button></nav></header>
+<main>
+<section class="hero"><div><span class="eyebrow"><span class="spark">✳</span> MeritEdge + AI Interviewer</span><h1>Assess, then interview, in <em>one workspace.</em></h1><p class="lead">MeritEdge scores skills with a role-specific assessment. AI Interviewer adds a structured interview for the same candidates. See both signals before you spend another hour screening.</p><div class="actions"><button class="primary" onclick="startFlow()">Start MeritEdge + AI Interviewer <span>→</span></button><button class="ghost" onclick="showView('plans')">See plans</button></div><div class="proof"><div class="avatars"><i>AM</i><i>JK</i><i>SR</i></div><span><b>Two products, one shortlist.</b> MeritEdge scores plus AI Interviewer evidence in TalentEdge.</span></div><div class="proof-chips" id="landChips"><span>Teams use TalentEdge for designer and engineer hiring</span><span>First MeritEdge assessment in minutes</span><span>No card to try</span></div></div>
+<div class="mock" id="product"><div class="mocktop"><span class="mocktitle">Hiring workspace <span style="color:#99a39b">/</span> MeritEdge + AI Interviewer</span><span class="live">● Live preview</span></div><div class="job"><div><small>MERITEDGE · ASSESSMENT</small><strong id="landJobTitle">Senior Product Designer</strong><small id="landJobMeta">Design systems · 5 candidates invited</small></div><span class="role">Open →</span></div><div class="job"><div><small>AI INTERVIEWER · INTERVIEW</small><strong id="landIvTitle">Senior Product Designer · AI Interview</strong><small id="landIvMeta">Linked to the same assessment · 2 sessions complete</small></div><span class="role">Open →</span></div><div class="statrow"><div class="stat"><label>MeritEdge</label><strong id="landStatA">02</strong><span>Published assessments</span></div><div class="stat"><label>AI Interviewer</label><strong id="landStatB">02</strong><span>Published interviews</span></div><div class="stat"><label>Shortlisted</label><strong id="landStatC">02</strong><span>Ready to hire</span></div></div><div class="sectionlabel">Top candidates <a href="#why">View all →</a></div><div id="landCandidates"><div class="candidate"><span class="avatar">MC</span><span><strong>Maya Chen</strong><small>MeritEdge 92 · AI Interviewer 4.8/5</small></span><span class="twoscore"><span class="as">92</span><span class="iv">4.8</span></span></div><div class="candidate"><span class="avatar">JR</span><span><strong>Jordan Rivera</strong><small>MeritEdge 87 · AI Interviewer 4.2/5</small></span><span class="twoscore"><span class="as">87</span><span class="iv">4.2</span></span></div></div><div class="interview"><div><b>✳ AI Interviewer recommends next</b><span>2 strong matches · interview insights ready on the MeritEdge shortlist</span></div><span class="arrow">↗</span></div><div class="floating"><b>Both products, one candidate.</b><br>MeritEdge score + AI Interviewer signal.</div></div></section>
+<section class="flow" id="products" style="padding-bottom:20px"><div class="flowhead"><span class="kicker">What you get in this prototype</span><h2>MeritEdge and AI Interviewer.</h2><p>The workspace after login has both products: create-to-publish assessments, then structured AI interviews for the same people.</p></div><div class="prodgrid"><div class="prodcard"><span class="kicker">MeritEdge</span><h3>Skills assessments</h3><p>Create from a job title or template, add questions, publish, and invite candidates. See a ranked shortlist with scores.</p><ul class="featul"><li>Create → review → publish</li><li>Invites and completion</li><li>Jump into the linked AI interview</li></ul></div><div class="prodcard"><span class="kicker">AI Interviewer</span><h3>Structured AI interviews</h3><p>Build an interview, link it to a MeritEdge assessment, publish, and invite the same candidates. Get interview signal and a hiring recommendation.</p><ul class="featul"><li>Create → review → publish</li><li>Linked to the same candidates</li><li>Interview score beside the assessment score</li></ul></div></div></section>
+<section class="flow" id="how"><div class="flowhead"><span class="kicker">Your first win, in minutes</span><h2>From assessment to AI interview.</h2><p>MeritEdge builds the assessment. AI Interviewer interviews the same candidates. One connected path — no setup maze.</p></div><div class="steps" id="steps"><div class="step active" data-step="0"><div class="stepnum">01</div><h3>Choose a role</h3><p>Tell us who you're looking for.</p></div><div class="step" data-step="1"><div class="stepnum">02</div><h3>MeritEdge assessment</h3><p>A role-specific assessment, ready to go.</p></div><div class="step" data-step="2"><div class="stepnum">03</div><h3>Invite candidates</h3><p>Share one link. Candidates take it on their time.</p></div><div class="step" data-step="3"><div class="stepnum">04</div><h3>See the signal</h3><p>Clear MeritEdge scores and a ranked shortlist.</p></div><div class="step" data-step="4"><div class="stepnum">05</div><h3>AI Interviewer</h3><p>Structured interview evidence for the same people.</p></div></div><div class="stepinfo" id="stepinfo"><span class="stepicon">✳</span><span><strong>Start with a role.</strong> Choose a job title. MeritEdge shapes the assessment; AI Interviewer can interview the same candidates next.</span></div></section>
+</div>
+<section class="benefits" id="why"><div class="wrap benefitgrid"><div><span class="kicker">The difference</span><h2>Not another score. Assessment plus interview.</h2><p>MeritEdge shows how each candidate performed. AI Interviewer adds structured interview evidence for the same people. Both signals sit in one workspace so your team can move forward with context.</p><div class="benefitlist"><div><span class="check">✓</span> MeritEdge: assess skills that matter for this role</div><div><span class="check">✓</span> AI Interviewer: structured interview for the same candidates</div><div><span class="check">✓</span> Combined recommendation in one candidate view</div></div></div><div class="resultcard"><div class="resulttop"><div><small>MERITEDGE + AI INTERVIEWER</small><h3 id="landHeroName">Maya Chen · Senior Product Designer</h3></div><span class="match" id="landHeroMatch">Strong match</span></div><div class="reco"><span class="recoicon">✳</span><div><b>Move to team conversation</b><p id="landHeroNote">Strong MeritEdge assessment and thoughtful tradeoffs in the AI Interviewer session. Explore collaboration style and product strategy in the next round.</p></div></div><div class="metricrow"><div class="metric"><b id="landHeroScore">92</b><span>MeritEdge score</span></div><div class="metric"><b id="landHeroIv">4.8/5</b><span>AI Interviewer</span></div><div class="metric"><b>2</b><span>Evidence-backed strengths</span></div></div></div></div></section>
+<div class="wrap"><section class="bottom"><div class="bottomcard"><div><h2>Your next great hire is closer.</h2><p>Create a MeritEdge assessment and an AI Interviewer session in one workspace.</p></div><button class="primary" onclick="startFlow()">Start MeritEdge + AI Interviewer <span>→</span></button></div></section><div class="enterprise" id="enterprise">Hiring at scale? <a href="mailto:teams@meritedge.example?subject=MeritEdge%20enterprise">Talk to our team about enterprise →</a> · <button class="forgot" onclick="showView('plans')">See plans</button></div><footer class="footer"><b>◈ MeritEdge + AI Interviewer</b><span>Assess with MeritEdge. Interview with AI Interviewer.</span><span>© MeritEdge · Prototype</span></footer></div>
+</main>
+</div>
+
+<div id="view-plans" class="view">
+<div class="wrap">
+<header class="nav"><button class="brand" onclick="showView('landing')"><img id="publicPlansLogo" class="brand-logo" src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI"></button><nav class="navlinks"><button class="ghost" style="border:0;padding:0;font:inherit;color:inherit" onclick="showView('landing')">Product</button><button class="ghost" onclick="showView('login')">Log in</button><button class="navcta" onclick="startFlow()">Start free <span>↗</span></button></nav></header>
+<div class="planpage">
+  <div class="planhead">
+    <span class="kicker">Pricing</span>
+    <h1>Plans that grow with hiring.</h1>
+    <p>Prototype catalogue only. No payment is captured and nothing is billed. Use these screens to walk create → tour → upgrade.</p>
+    <div id="publicPlanContinue"></div>
+    <div class="planbill" id="publicBill"><button class="on" type="button" onclick="setBillCycle('monthly')">Monthly</button><button type="button" onclick="setBillCycle('annual')">Annual · save 20%</button></div>
+  </div>
+  <div class="plangrid" id="publicPlanCards"></div>
+  <div class="planhead" style="margin-top:48px">
+    <span class="kicker">What you get</span>
+    <h1 style="font-size:28px">Feature listing</h1>
+    <p>The same MeritEdge + AI Interviewer flow you can click after login.</p>
+  </div>
+  <div class="featgrid" id="publicFeatures"></div>
+  <table class="comptable" id="publicCompare"></table>
+  <p class="modalfoot">GST (18%) is added on checkout. Card <b>4242</b> succeeds · <b>4000</b> fails.</p>
+</div>
+<footer class="footer"><b>◈ MeritEdge</b><span>Assess with clarity. Interview with confidence.</span><span>© MeritEdge · Prototype</span></footer>
+</div>
+</div>
+
+<div id="view-login" class="view td-host">
+  <div class="td-page">
+    <div class="td-blob one"></div>
+    <div class="td-blob two"></div>
+    <div class="td-blob three"></div>
+    <video class="td-bg-video" autoplay loop muted playsinline>
+      <source src="https://me.otomeyt.ai/login/dark-swirling.mp4" type="video/mp4" />
+    </video>
+    <div class="td-noise"></div>
+    <div class="td-wrap">
+      <header class="td-header">
+        <button class="td-brand" type="button" onclick="showView('landing')" aria-label="TalentEdge by Otomeyt AI">
+          <img class="td-logo" id="loginBrandLogo" src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI" />
+          <span class="td-divider"></span>
+          <span class="td-brand-text">
+            <span class="td-brand-main">TalentEdge</span>
+            <span class="td-brand-sub">by Otomeyt AI</span>
+          </span>
+        </button>
+        <div class="td-controls">
+          <button class="td-chip" type="button" aria-label="Language">
+            <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-1.svg" alt="" />
+            <span>English</span>
+            <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-2.svg" alt="" />
+          </button>
+          <button class="td-icon-btn" type="button" aria-label="Toggle theme" onclick="toggleTheme()">
+            <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-3.svg" alt="" />
+          </button>
+        </div>
+      </header>
+      <main class="td-main">
+        <section class="td-card">
+          <aside class="td-promo">
+            <video autoplay loop muted playsinline>
+              <source src="https://me.otomeyt.ai/login/getty-images.mp4" type="video/mp4" />
+            </video>
+            <div class="td-promo-overlay"></div>
+            <div class="td-promo-content">
+              <h2 id="tdSlideTitle">AI-Powered<br /><span class="td-grad">Screening</span></h2>
+              <p class="td-lead" id="tdSlideLead">Screen smarter, hire faster.</p>
+              <p class="td-sub" id="tdSlideSub">Intelligent automation for candidate evaluation.</p>
+              <div class="td-dots">
+                <button class="td-dot active" type="button" onclick="setLoginSlide(0)" aria-label="Go to slide 1"></button>
+                <button class="td-dot" type="button" onclick="setLoginSlide(1)" aria-label="Go to slide 2"></button>
+                <button class="td-dot" type="button" onclick="setLoginSlide(2)" aria-label="Go to slide 3"></button>
+              </div>
+            </div>
+          </aside>
+          <div class="td-form-side">
+            <div class="td-title">
+              <h1>Welcome to <span class="td-grad">TalentEdge</span></h1>
+              <p>An AI-Native Assessment Suite</p>
+            </div>
+            <form onsubmit="event.preventDefault();signIn()">
+              <div class="td-field">
+                <img class="td-icon" src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-4.svg" alt="" />
+                <input id="loginEmail" type="email" autocomplete="username" placeholder="Work Email" />
+              </div>
+              <div class="td-field td-password">
+                <img class="td-icon" src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-5.svg" alt="" />
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" />
+                <button class="td-show" type="button" onclick="togglePw()" aria-label="Show password">
+                  <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-6.svg" alt="" />
+                </button>
+              </div>
+              <div class="td-forgot-row">
+                <button type="button" onclick="openInfo('Forgot password','In the live product this would email a reset link. This prototype does not send mail. Use admin@demo.com or alex@acme.com with any password.')">Forgot Password?</button>
+              </div>
+              <div class="td-error loginerror" id="loginError"></div>
+              <button class="td-login-btn" type="submit">Log In</button>
+              <div class="td-or">or</div>
+              <div class="td-social">
+                <button class="td-social-btn" type="button" onclick="startSso('google')">
+                  <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-7.svg" alt="" />
+                  Google
+                </button>
+                <button class="td-social-btn" type="button" onclick="startSso('microsoft')">
+                  <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-8.svg" alt="" />
+                  Microsoft
+                </button>
+                <button class="td-social-btn" type="button" onclick="toast('SSO uses your company email domain in the live product.')">
+                  <img src="https://c.animaapp.com/Yn5fn4w8COOHsuakUjTCMA/assets/icon-9.svg" alt="" />
+                  SSO
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+      <footer class="td-footer">
+        <a href="https://me.otomeyt.ai/oauth/privacy-policy">Privacy Policy</a>
+        <span>·</span>
+        <a href="https://me.otomeyt.ai/oauth/terms-of-service">Terms of Service</a>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<div id="view-workspace" class="view on">
+  <div class="te-shell">
+    <header class="te-header">
+      <div class="te-brand">
+        <img id="teAppLogo" src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI">
+        <span class="sep"></span>
+        <span class="te-hello" id="teHello">Good afternoon</span>
+      </div>
+      <div class="te-search">⌕ Search assessments, candidates, reports…</div>
+      <div class="te-right">
+        <button class="te-credit" id="teCredits" type="button" onclick="openCreditsNav()"></button>
+        <div class="te-co" id="teCompany"><span>Company</span></div>
+        <button class="te-ico te-theme" id="themeToggle" type="button" title="Light theme" aria-label="Switch to light theme" onclick="toggleTheme()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+        <button class="te-ico" title="Notifications" type="button">🔔</button>
+      </div>
+    </header>
+    <div class="te-body">
+      <aside class="te-side" aria-label="Navigation">
+        <nav class="te-nav" id="teNav"></nav>
+        <div class="te-foot">
+          <button class="te-item" data-nav="settings" onclick="appNav('settings')">Settings</button>
+          <button class="te-item" onclick="signOut()">Log out</button>
+          <div class="te-info">Trust Center<br>© 2026 Otomeyt AI<br>Prototype</div>
+        </div>
+      </aside>
+      <div class="te-main">
+        <div class="te-crumbs" id="teCrumbs">Dashboard</div>
+        <div id="teChecklist"></div>
+        <div id="appContent"></div>
+      </div>
+    </div>
+  </div>
+  <div class="rzp-back" id="rzpOverlay" onclick="if(event.target===this)closeRazorpay()"></div>
+<div class="gmail-back" id="gstMailOverlay" role="dialog" aria-modal="true" aria-labelledby="gstMailSubject" onclick="if(event.target===this)closeGstMail()"></div>
+<div class="gmail-back" id="referMailOverlay" role="dialog" aria-modal="true" aria-labelledby="referMailSubject" onclick="if(event.target===this)closeReferShare()"></div>
+<div class="gmail-back" id="inviteMailOverlay" role="dialog" aria-modal="true" aria-labelledby="inviteMailSubject" onclick="if(event.target===this)closeInviteMail()"></div>
+<div class="cx-back" id="candExamOverlay" role="dialog" aria-modal="true" aria-label="Candidate assessment"></div>
+<div class="tj-back" id="trialJourneyOverlay" role="dialog" aria-modal="true" aria-labelledby="tjTitleH" onclick="if(event.target===this)closeTrialJourney()"></div>
+<div class="tj-back" id="billJourneyOverlay" role="dialog" aria-modal="true" aria-labelledby="bjTitleH" onclick="if(event.target===this)closeBillJourney()"></div>
+</div>
+
+<div class="modalback" id="signupModal" role="dialog" aria-modal="true" aria-labelledby="signupTitle" onclick="if(event.target===this)closeSignup()"><div class="modal"><button class="modalclose" aria-label="Close" onclick="closeSignup()">×</button><div class="modalbrand"><img class="brand-logo" src="assets/otomeyt-ai-logo-light.svg" alt="Otomeyt AI" style="height:24px"><span style="font:500 10px 'DM Sans';color:#6b7280">· interactive preview</span></div><div class="progress"><i id="p1" class="on"></i><i id="p2"></i><i id="p3"></i></div><div id="signupContent"></div><div class="modalfoot">Demo only · No email is sent and no account is created in MeritEdge</div></div></div>
+<div class="modalback" id="infoModal" onclick="if(event.target===this)closeInfo()"><div class="modal"><button class="modalclose" aria-label="Close" onclick="closeInfo()">×</button><h2 id="infoTitle"></h2><p class="modalcopy" id="infoCopy"></p><div id="infoActions"><button class="primary" onclick="closeInfo()">Got it</button></div></div></div>
+<div class="tour-back" id="tourOverlay"><div class="tour-card" id="tourCard"></div></div>
+<div class="demo-reel" id="demoReel" role="dialog" aria-modal="true" aria-label="TalentEdge product demo"></div>
+<div class="tour-intro open" id="tourIntro" role="dialog" aria-modal="true" aria-labelledby="tourIntroTitle">
+  <div class="ti-bg" aria-hidden="true">
+    <div class="ti-orb a"></div><div class="ti-orb b"></div><div class="ti-orb c"></div>
+    <div class="ti-stars"></div>
+    <svg class="ti-circuit" viewBox="0 0 1200 700" aria-hidden="true"><path d="M40 620 C120 520,80 260,220 220" fill="none" stroke="#7c3aed55" stroke-width="1.2"/><path d="M1160 80 C980 140,1040 300,880 340" fill="none" stroke="#60a5fa44" stroke-width="1.2"/><circle cx="220" cy="220" r="4" fill="#a78bfa"/><circle cx="880" cy="340" r="4" fill="#60a5fa"/><circle cx="1080" cy="560" r="3" fill="#c4b5fd"/><circle cx="80" cy="120" r="3" fill="#a78bfa"/></svg>
+  </div>
+  <div class="ti-stage" id="tourIntroStage">
+    <p class="ti-kicker">TalentEdge</p>
+    <h1 id="tourIntroTitle">The future of assessments<br>&amp; AI interviewing</h1>
+    <div class="ti-bar" aria-hidden="true"><i></i></div>
+    <p class="ti-pill">Welcome to the future of hiring.</p>
+    <p class="ti-hint speak" id="tiSpeakHint"><span class="ti-speak" aria-hidden="true"><i></i><i></i><i></i></span> Your product tour is about to begin</p>
+    <button class="ti-skip" type="button" onclick="skipTourIntro()">Skip intro →</button>
+  </div>
+</div>
+<div class="sso-back" id="ssoOverlay" role="dialog" aria-modal="true" aria-labelledby="ssoTitle"><div class="sso-stage" id="ssoStage"></div></div>
+<div class="modalback" id="intentModal" role="dialog" aria-modal="true" aria-labelledby="intentTitle" onclick="if(event.target===this)closeIntentPicker()"><div class="modal" style="width:min(520px,100%);max-height:calc(100vh - 40px);overflow:auto"><button class="modalclose" type="button" aria-label="Close" onclick="closeIntentPicker()">×</button><div class="modalbrand"><img class="brand-logo" src="assets/otomeyt-ai-logo-light.svg" alt="Otomeyt AI" style="height:24px"><span style="font:500 10px 'DM Sans';color:#6b7280">· TalentEdge</span></div><h2 id="intentTitle" style="margin-top:20px">What are you hiring for?</h2><p class="modalcopy">Shape the MeritEdge and AI Interviewer preview around your next role. No account yet.</p><div id="intentBody"></div></div></div>
+<div class="modalback" id="readyModal" role="dialog" aria-modal="true" aria-labelledby="readyTitle" onclick="if(event.target===this)closeReady()"><div class="modal" style="width:min(520px,100%)"><button class="modalclose" type="button" aria-label="Close" onclick="closeReady()">×</button><div class="modalbrand"><img class="brand-logo" src="assets/otomeyt-ai-logo-light.svg" alt="Otomeyt AI" style="height:24px"><span style="font:500 10px 'DM Sans';color:#6b7280">· TalentEdge workspace</span></div><div id="readyBody"></div></div></div>
+<div class="sitin-back" id="sitinOverlay" role="dialog" aria-modal="true"><div class="sitin" id="sitinCard"></div></div>
+<div class="wow-back" id="wowOverlay" role="dialog" aria-modal="true" aria-labelledby="wowTitle" onclick="if(event.target===this && wow && wow.canSkip) closeWow()"><div class="wow-stage" id="wowStage"></div></div>
+<div class="toast" id="toast"></div>

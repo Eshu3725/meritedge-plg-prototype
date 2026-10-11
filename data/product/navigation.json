@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "cat": "TalentEdge"
+    },
+    {
+      "id": "meritedge",
+      "label": "MeritEdge",
+      "sub": true,
+      "icon": "brain"
+    },
+    {
+      "id": "ai-interviewer",
+      "label": "AI Interviewer",
+      "sub": true,
+      "icon": "msg"
+    },
+    {
+      "id": "questions",
+      "label": "Question repository",
+      "locked": true,
+      "icon": "lib"
+    },
+    {
+      "id": "plans",
+      "label": "Plans",
+      "icon": "card"
+    },
+    {
+      "id": "billing",
+      "label": "Billing",
+      "icon": "bill"
+    },
+    {
+      "id": "refer",
+      "label": "Refer and earn credits",
+      "icon": "gift"
+    }
+  ],
+  "titles": {
+    "home": "Dashboard",
+    "meritedge": "MeritEdge",
+    "ai-interviewer": "AI Interviewer",
+    "questions": "Question repository",
+    "settings": "Settings",
+    "plans": "Plans",
+    "billing": "Billing",
+    "refer": "Refer and earn"
+  }
+}

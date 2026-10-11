@@ -1,0 +1,61 @@
+{
+  "assessment": [
+    {
+      "id": "method",
+      "label": "Source",
+      "hint": "How you start"
+    },
+    {
+      "id": "basic",
+      "label": "Basic Info",
+      "hint": "Role & duration"
+    },
+    {
+      "id": "questions",
+      "label": "Questions",
+      "hint": "Item bank"
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "hint": "Proctoring"
+    },
+    {
+      "id": "review",
+      "label": "Review",
+      "hint": "Publish"
+    }
+  ],
+  "interview": [
+    {
+      "id": "source",
+      "label": "Source & Structure",
+      "hint": "Mode & input source"
+    },
+    {
+      "id": "configure",
+      "label": "Configure",
+      "hint": "Details, skills & format"
+    },
+    {
+      "id": "persona",
+      "label": "AI Persona",
+      "hint": "Voice & style"
+    },
+    {
+      "id": "topics",
+      "label": "Topics",
+      "hint": "Interview questions"
+    },
+    {
+      "id": "evaluation",
+      "label": "Evaluation",
+      "hint": "Scoring criteria"
+    },
+    {
+      "id": "review",
+      "label": "Review",
+      "hint": "Final check"
+    }
+  ]
+}

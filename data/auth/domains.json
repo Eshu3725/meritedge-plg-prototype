@@ -1,0 +1,32 @@
+{
+  "personal": [
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "aol.com",
+    "icloud.com",
+    "mail.com",
+    "protonmail.com",
+    "zoho.com",
+    "yandex.com",
+    "live.com",
+    "msn.com",
+    "me.com",
+    "inbox.com",
+    "gmx.com",
+    "yahoo.co.in",
+    "yahoo.co.uk",
+    "rediffmail.com",
+    "googlemail.com"
+  ],
+  "disposable": [
+    "mailinator.com",
+    "guerrillamail.com",
+    "tempmail.com",
+    "throwaway.email",
+    "yopmail.com",
+    "sharklasers.com",
+    "10minutemail.com"
+  ]
+}

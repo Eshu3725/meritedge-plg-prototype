@@ -1,0 +1,324 @@
+[
+  {
+    "id": "spd",
+    "role": "Senior Product Designer",
+    "file": "SPD_Job_Description.pdf",
+    "match": "designer",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": [
+      "Product thinking",
+      "Craft",
+      "Stakeholder alignment",
+      "Accessibility"
+    ],
+    "excerpt": "Own end-to-end product craft for a core growth surface. Partner with research and engineering, run discovery, and ship tradeoffs that protect the date without dropping accessibility.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "Which discovery method best validates a risky checkout change before build?"
+      },
+      {
+        "type": "MCQ",
+        "title": "A launch date is fixed. Visual polish and research both need a week. What do you cut?"
+      },
+      {
+        "type": "Written",
+        "title": "Walk through how you would critique this onboarding flow with engineering."
+      },
+      {
+        "type": "MCQ",
+        "title": "Which accessibility check is required before a public release?"
+      },
+      {
+        "type": "Written",
+        "title": "A PM wants a late visual change. How do you respond without slipping the date?"
+      }
+    ],
+    "topics": [
+      {
+        "title": "Product thinking",
+        "mins": 8,
+        "prompt": "Walk through a recent tradeoff you made under a deadline."
+      },
+      {
+        "title": "Craft and critique",
+        "mins": 8,
+        "prompt": "How do you give design feedback that engineering can act on?"
+      },
+      {
+        "title": "Stakeholders",
+        "mins": 7,
+        "prompt": "Tell me about aligning research, design, and engineering when they disagreed."
+      }
+    ]
+  },
+  {
+    "id": "swe",
+    "role": "Software Engineer",
+    "file": "SWE_Job_Description.pdf",
+    "match": "engineer",
+    "kind": "tech",
+    "duration": "60",
+    "ivDuration": "30",
+    "skills": [
+      "System design",
+      "APIs",
+      "Reliability",
+      "Debugging"
+    ],
+    "excerpt": "Build and operate backend services. Design APIs, reason about failure modes, and debug production with incomplete information. Comfortable with data stores, queues, and ownership of on-call.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "A downstream API starts returning 5xx. What is the safest first production response?"
+      },
+      {
+        "type": "MCQ",
+        "title": "When do you add an index versus introducing a cache?"
+      },
+      {
+        "type": "Written",
+        "title": "Design a rate limiter for a public API. What fails first at 10x traffic?"
+      },
+      {
+        "type": "MCQ",
+        "title": "Which isolation level stops a dirty read without serializing all writes?"
+      },
+      {
+        "type": "Written",
+        "title": "Walk through how you would debug a latency spike with no recent deploys."
+      }
+    ],
+    "topics": [
+      {
+        "title": "System design",
+        "mins": 10,
+        "prompt": "Design a service that must stay up if one dependency fails."
+      },
+      {
+        "title": "Ownership",
+        "mins": 8,
+        "prompt": "Tell me about an incident you owned from alert to follow-up."
+      },
+      {
+        "title": "Tradeoffs",
+        "mins": 7,
+        "prompt": "When would you choose consistency over availability?"
+      }
+    ]
+  },
+  {
+    "id": "csm",
+    "role": "Customer Success Manager",
+    "file": "CSM_Job_Description.pdf",
+    "match": "success",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": [
+      "Judgment",
+      "Communication",
+      "Renewals",
+      "Prioritization"
+    ],
+    "excerpt": "Own a book of accounts through onboarding, adoption, and renewal. Spot risk early, escalate with evidence, and protect the customer relationship without over-promising the roadmap.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "A champion leaves two weeks before renewal. What do you do first?"
+      },
+      {
+        "type": "Written",
+        "title": "An account is quietly dropping usage. Draft how you would reopen the conversation."
+      },
+      {
+        "type": "MCQ",
+        "title": "Three accounts need time this week. Which signal ranks highest?"
+      },
+      {
+        "type": "Written",
+        "title": "A customer wants a feature that is not on the roadmap. How do you respond?"
+      }
+    ],
+    "topics": [
+      {
+        "title": "Renewal risk",
+        "mins": 8,
+        "prompt": "Walk through a time you saved an at-risk renewal."
+      },
+      {
+        "title": "Communication",
+        "mins": 7,
+        "prompt": "How do you escalate without surprising the customer or your team?"
+      },
+      {
+        "title": "Prioritization",
+        "mins": 7,
+        "prompt": "How do you split time across a book of accounts?"
+      }
+    ]
+  },
+  {
+    "id": "da",
+    "role": "Data Analyst",
+    "file": "DA_Job_Description.pdf",
+    "match": "analyst",
+    "kind": "tech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": [
+      "Metrics",
+      "SQL thinking",
+      "Storytelling",
+      "Funnel analysis"
+    ],
+    "excerpt": "Define metrics with the business, investigate funnel drop-off, and present findings that a hiring manager can act on. Comfortable questioning a dashboard that looks right but measures the wrong thing.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "Activation is up, retention is flat. Which metric do you inspect first?"
+      },
+      {
+        "type": "Written",
+        "title": "A dashboard shows a 20% conversion jump after a UI change. What else must be true?"
+      },
+      {
+        "type": "MCQ",
+        "title": "Which definition of 'active user' is least likely to mislead a weekly review?"
+      },
+      {
+        "type": "Written",
+        "title": "Explain a funnel drop-off to a product manager who does not write SQL."
+      }
+    ],
+    "topics": [
+      {
+        "title": "Metric definition",
+        "mins": 8,
+        "prompt": "Tell me about a metric you refused to ship until the definition was right."
+      },
+      {
+        "title": "Investigation",
+        "mins": 8,
+        "prompt": "Walk through a funnel drop-off you diagnosed."
+      },
+      {
+        "title": "Storytelling",
+        "mins": 7,
+        "prompt": "How do you present a finding that contradicts a stakeholder's belief?"
+      }
+    ]
+  },
+  {
+    "id": "fe",
+    "role": "Frontend Engineer",
+    "file": "FE_Job_Description.pdf",
+    "match": "frontend",
+    "kind": "tech",
+    "duration": "50",
+    "ivDuration": "25",
+    "skills": [
+      "React",
+      "CSS",
+      "Accessibility",
+      "Performance"
+    ],
+    "excerpt": "Ship product UI with React. Own accessibility, performance, and design-system usage. Partner with design without throwing specs over the wall.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "Which change most often breaks keyboard users first?"
+      },
+      {
+        "type": "MCQ",
+        "title": "A list janks while scrolling. What do you inspect first?"
+      },
+      {
+        "type": "Written",
+        "title": "How do you review a PR that ships a new button variant?"
+      },
+      {
+        "type": "MCQ",
+        "title": "When do you lift state versus keep it local?"
+      },
+      {
+        "type": "Written",
+        "title": "The design is pixel-perfect on desktop and unusable on mobile. What do you do?"
+      }
+    ],
+    "topics": [
+      {
+        "title": "UI systems",
+        "mins": 8,
+        "prompt": "Walk through a component you reused instead of rewriting."
+      },
+      {
+        "title": "Accessibility",
+        "mins": 8,
+        "prompt": "Tell me about catching an a11y miss before release."
+      },
+      {
+        "title": "Performance",
+        "mins": 7,
+        "prompt": "How do you decide a UI is slow enough to fix this sprint?"
+      }
+    ]
+  },
+  {
+    "id": "sales",
+    "role": "Sales Account Executive",
+    "file": "AE_Job_Description.pdf",
+    "match": "sales",
+    "kind": "nontech",
+    "duration": "40",
+    "ivDuration": "25",
+    "skills": [
+      "Discovery",
+      "Qualification",
+      "Negotiation",
+      "Pipeline"
+    ],
+    "excerpt": "Run a clean discovery, qualify hard, and forecast without theatre. Comfortable losing a deal that was never real.",
+    "questions": [
+      {
+        "type": "MCQ",
+        "title": "A champion loves you and procurement has not replied. What is true?"
+      },
+      {
+        "type": "Written",
+        "title": "Draft the first question you ask after a demo request."
+      },
+      {
+        "type": "MCQ",
+        "title": "Which signal is weakest for this-quarter commit?"
+      },
+      {
+        "type": "Written",
+        "title": "The buyer wants a discount before value is clear. How do you respond?"
+      },
+      {
+        "type": "MCQ",
+        "title": "When do you walk away from a large logo?"
+      }
+    ],
+    "topics": [
+      {
+        "title": "Discovery",
+        "mins": 8,
+        "prompt": "Tell me about a deal you disqualified early."
+      },
+      {
+        "title": "Negotiation",
+        "mins": 8,
+        "prompt": "Walk through a discount you refused."
+      },
+      {
+        "title": "Forecast",
+        "mins": 7,
+        "prompt": "How do you know a commit is real?"
+      }
+    ]
+  }
+]

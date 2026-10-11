@@ -1,0 +1,78 @@
+{
+  "accounts": {
+    "google": [
+      {
+        "name": "Priya Shah",
+        "email": "priya.shah@acme.com",
+        "company": "Acme",
+        "color": "#1a73e8"
+      },
+      {
+        "name": "Jordan Lee",
+        "email": "jordan.lee@northwind.com",
+        "company": "Northwind Talent",
+        "color": "#188038"
+      }
+    ],
+    "microsoft": [
+      {
+        "name": "Alex Morgan",
+        "email": "alex.morgan@contoso.com",
+        "company": "Contoso",
+        "color": "#0078d4"
+      },
+      {
+        "name": "Dana Chen",
+        "email": "dana.chen@fabrikam.com",
+        "company": "Fabrikam",
+        "color": "#107c10"
+      }
+    ]
+  },
+  "permissions": {
+    "google": [
+      {
+        "id": "email",
+        "title": "See your email address",
+        "copy": "MeritEdge uses this to sign you in and name your workspace."
+      },
+      {
+        "id": "profile",
+        "title": "See your personal info, including any personal info you have made publicly available",
+        "copy": "Your name and basic profile details."
+      },
+      {
+        "id": "openid",
+        "title": "Associate you with your personal info on Google",
+        "copy": "So MeritEdge can recognize this Google Account next time."
+      },
+      {
+        "id": "picture",
+        "title": "See your profile picture",
+        "copy": "Shown as your avatar in the MeritEdge workspace."
+      }
+    ],
+    "microsoft": [
+      {
+        "id": "profile",
+        "title": "View your basic profile",
+        "copy": "Name and preferred username."
+      },
+      {
+        "id": "email",
+        "title": "View your email address",
+        "copy": "Used as your MeritEdge sign-in."
+      },
+      {
+        "id": "openid",
+        "title": "Sign you in and read your profile",
+        "copy": "Keeps you signed in to this workspace."
+      },
+      {
+        "id": "offline",
+        "title": "Maintain access to data you have given it access to",
+        "copy": "Lets MeritEdge remember this Microsoft account."
+      }
+    ]
+  }
+}

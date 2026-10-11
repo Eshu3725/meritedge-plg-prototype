@@ -1,0 +1,149 @@
+{
+  "plans": [
+    {
+      "id": "trial",
+      "name": "Free trial",
+      "tag": "Try it",
+      "price": 0,
+      "annual": 0,
+      "credits": 25,
+      "seats": 3,
+      "cta": "Start free",
+      "who": "14 days · no card",
+      "features": [
+        "25 credits",
+        "MeritEdge + AI Interviewer",
+        "Platform tour",
+        "Invites"
+      ]
+    },
+    {
+      "id": "starter",
+      "name": "Starter",
+      "tag": "",
+      "price": 99,
+      "annual": 79,
+      "credits": 200,
+      "seats": 5,
+      "cta": "Choose Starter",
+      "who": "Growing teams hiring a few roles",
+      "features": [
+        "200 credits / month",
+        "Assessments + AI interviews",
+        "Email invites",
+        "GST invoice"
+      ]
+    },
+    {
+      "id": "growth",
+      "name": "Growth",
+      "tag": "Most used",
+      "price": 249,
+      "annual": 199,
+      "credits": 800,
+      "seats": 15,
+      "cta": "Choose Growth",
+      "who": "Teams that run hiring every week",
+      "features": [
+        "800 credits / month",
+        "Everything in Starter",
+        "Priority support",
+        "Shared shortlists"
+      ]
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "tag": "",
+      "price": null,
+      "annual": null,
+      "credits": "Custom",
+      "seats": "Unlimited",
+      "cta": "Talk to us",
+      "who": "Volume hiring, SSO, contracts",
+      "features": [
+        "Custom credits",
+        "SSO & roles",
+        "Dedicated success",
+        "Security review"
+      ]
+    }
+  ],
+  "comparison": [
+    [
+      "Credits / month",
+      "25 (trial)",
+      "200",
+      "800",
+      "Custom"
+    ],
+    [
+      "Seats",
+      "3",
+      "5",
+      "15",
+      "Unlimited"
+    ],
+    [
+      "MeritEdge assessments",
+      "Yes",
+      "Yes",
+      "Yes",
+      "Yes"
+    ],
+    [
+      "AI Interviewer",
+      "Yes",
+      "Yes",
+      "Yes",
+      "Yes"
+    ],
+    [
+      "Proctoring",
+      "Basic",
+      "Standard",
+      "Standard",
+      "Advanced"
+    ],
+    [
+      "GST invoices",
+      "—",
+      "Yes",
+      "Yes",
+      "Yes"
+    ],
+    [
+      "SSO",
+      "—",
+      "—",
+      "—",
+      "Yes"
+    ]
+  ],
+  "features": [
+    {
+      "title": "MeritEdge assessments",
+      "copy": "Create, review, and publish cognitive assessments from a role or template."
+    },
+    {
+      "title": "AI Interviewer",
+      "copy": "Structured interview evidence linked to the same candidates."
+    },
+    {
+      "title": "Combined shortlist",
+      "copy": "Assessment score plus interview signal in one hiring view."
+    },
+    {
+      "title": "Invites",
+      "copy": "Send prototype invites and watch candidate status change."
+    },
+    {
+      "title": "Proctoring toggles",
+      "copy": "Webcam, tab-switch, and fullscreen settings in the wizard."
+    },
+    {
+      "title": "Credit-based usage",
+      "copy": "Trial credits, paid packs, and a GST invoice on upgrade."
+    }
+  ]
+}

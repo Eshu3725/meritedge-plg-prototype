@@ -1,0 +1,27 @@
+[
+  {
+    "id": "profile_complete",
+    "label": "Complete company profile",
+    "desc": "Add your logo and timezone"
+  },
+  {
+    "id": "assessment_created",
+    "label": "Create your first assessment",
+    "desc": "From a JD or template"
+  },
+  {
+    "id": "candidate_invited",
+    "label": "Invite at least 2 candidates",
+    "desc": "Add their emails to start"
+  },
+  {
+    "id": "report_viewed",
+    "label": "View your first report",
+    "desc": "See AI-scored results"
+  },
+  {
+    "id": "team_member_added",
+    "label": "Invite a team member",
+    "desc": "Collaborate on hiring"
+  }
+]
