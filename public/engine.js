@@ -1201,6 +1201,7 @@ function enterSalesPreview(){
   stopTourVoice();
   clearTourAdvance();
   tour = null;
+  closeTourIntro();
   document.body.classList.remove("tour-lock");
   document.getElementById("tourOverlay")?.classList.remove("open");
   const user = {
@@ -1227,7 +1228,7 @@ function enterSalesPreview(){
   checkout = null;
   showView("workspace");
   if(new URLSearchParams(location.search).get("story")==="trial") return;
-  beginProductTour();
+  startCreateAssessment({focused:true});
 }
 function closeSignup(){ signupVerifyGen += 1; document.getElementById("signupModal").classList.remove("open"); document.body.style.overflow=""; }
 function setProgress(n){ for(let i=1;i<=3;i++) document.getElementById("p"+i).classList.toggle("on", i<=n); }
@@ -3686,20 +3687,22 @@ function sampleTopics(role){
     {title:"Judgment", mins:10, prompt:"Walk through a tradeoff you made when time or information was limited."}
   ];
 }
-function startCreateAssessment(){
+function startCreateAssessment(opts){
+  opts = opts || {};
   if(tour){
     if(tour.waitFor==="create") tourDidAction();
     return;
   }
   const role = intentRole();
   const full = fullProduct();
+  const focused = !!opts.focused && !full;
   wizard = {
     kind:"assessment",
     step:0,
     publishedId:null,
     data:{
       build: full ? "" : "ai",
-      aiPhase: full ? "choose" : "generator",
+      aiPhase: full ? "choose" : focused ? "focused" : "generator",
       aiTab:"jd",
       aiCreateAt:0,
       aiPct:0,
@@ -3734,13 +3737,17 @@ function startCreateAssessment(){
   if(!full){
     applyJdToData(wizard.data, jdByRole(role), null, false);
     wizard.data.build = "ai";
-    wizard.data.aiPhase = "generator";
+    wizard.data.aiPhase = focused ? "focused" : "generator";
     wizard.data.aiTab = "jd";
+    wizard.data.focusedCreate = focused;
+    wizard.data.focusedFilter = "all";
+    wizard.data.focusedPanel = "";
   }
   appSection = "meritedge";
   appDetail = {type:"wizard"};
   renderWorkspace();
-  if(!full) scheduleAutoAssessmentGeneration();
+  if(!full && !focused) scheduleAutoAssessmentGeneration();
+  if(focused) requestAnimationFrame(()=>showAppClickPointer(".focused-primary", "Create assessment"));
 }
 function startCreateInterview(assessmentId){
   if(tour){
@@ -6058,6 +6065,89 @@ function onAiJdFile(ev){
   renderWorkspace();
   if(!fullProduct() && wizard.kind==="assessment" && wizard.data.aiPhase==="generator") generateAiAssessment();
 }
+function focusedJdCardHtml(j, selectedId){
+  return `<button type="button" class="focused-jd ${selectedId===j.id?"on":""}" onclick="focusedSelectJd('${j.id}')">
+    <span class="focused-jd-kind">${j.kind==="tech"?"Tech":"Non-tech"}</span>
+    <b>${escapeHtml(j.role)}</b>
+    <small>${escapeHtml(j.skills.slice(0,3).join(" · "))}</small>
+    <span class="focused-jd-meta">${j.questions.length} questions · ${j.duration} min</span>
+  </button>`;
+}
+function setFocusedFilter(filter){
+  if(!wizard?.data?.focusedCreate) return;
+  wizard.data.focusedFilter = filter;
+  renderWorkspace();
+}
+function focusedSelectJd(id){
+  if(!wizard?.data?.focusedCreate) return;
+  const jd = jdById(id);
+  if(!jd) return;
+  if(autoGenerateTimer){ clearTimeout(autoGenerateTimer); autoGenerateTimer = null; }
+  applyJdToData(wizard.data, jd, null, false);
+  wizard.data.focusedCustomText = "";
+  wizard.data.focusedAutoStart = false;
+  renderWorkspace();
+  scheduleFocusedAssessmentGeneration();
+}
+function scheduleFocusedAssessmentGeneration(){
+  if(!wizard?.data?.focusedCreate || wizard.data.aiPhase!=="focused") return;
+  if(autoGenerateTimer) clearTimeout(autoGenerateTimer);
+  wizard.data.focusedAutoStart = true;
+  wizard.data.focusedAutoStartAt = Date.now() + AUTO_PAGE_WAIT;
+  renderWorkspace();
+  requestAnimationFrame(()=>showAppClickPointer(".focused-primary", "Creating soon"));
+  toast("Your assessment will be created in 5 seconds.");
+  autoGenerateTimer = setTimeout(()=>{
+    autoGenerateTimer = null;
+    if(!wizard?.data?.focusedCreate || wizard.data.aiPhase!=="focused") return;
+    focusedCreateAssessment();
+  }, AUTO_PAGE_WAIT);
+}
+function onFocusedJdFile(ev){
+  const f = ev.target.files && ev.target.files[0];
+  if(!f || !wizard?.data?.focusedCreate) return;
+  const name = f.name.toLowerCase();
+  const hit = SAMPLE_JDS.find(j => name.includes(j.match) || name.includes(j.id)) || jdByRole(intentRole());
+  if(autoGenerateTimer) clearTimeout(autoGenerateTimer);
+  applyJdToData(wizard.data, hit, f.name, false);
+  wizard.data.focusedCustomText = "";
+  wizard.data.focusedAutoStart = false;
+  renderWorkspace();
+  scheduleFocusedAssessmentGeneration();
+}
+function focusedCreateAssessment(){
+  if(!wizard?.data?.focusedCreate) return;
+  const d = wizard.data;
+  const custom = (document.getElementById("focusedJdText")?.value || d.focusedCustomText || "").trim();
+  d.focusedCustomText = custom;
+  if(custom){
+    const jd = jdById(d.jdId) || jdByRole(d.role || intentRole());
+    applyJdToData(d, jd, d.jdFile || "Uploaded job description", false);
+    d.jdText = custom;
+  }
+  if(!d.jdId){
+    toast("Choose a role template or upload a job description first.");
+    return;
+  }
+  if(autoGenerateTimer) clearTimeout(autoGenerateTimer);
+  d.focusedAutoStart = false;
+  d.build = "ai";
+  d.aiPhase = "generator";
+  generateAiAssessment();
+}
+function focusedTogglePanel(panel){
+  if(!wizard?.data?.focusedCreate) return;
+  wizard.data.focusedPanel = wizard.data.focusedPanel===panel ? "" : panel;
+  hideAppClickPointer();
+  renderWorkspace();
+}
+function focusedBackToCreate(){
+  if(!wizard?.data?.focusedCreate) return;
+  wizard.data.aiPhase = "focused";
+  wizard.data.focusedPanel = "";
+  renderWorkspace();
+  requestAnimationFrame(()=>showAppClickPointer(".focused-primary", "Create assessment"));
+}
 function generateAiAssessment(){
   if(!wizard) return;
   const text = (document.getElementById("wAiJd")?.value || wizard.data.jdText || "").trim();
@@ -6089,7 +6179,13 @@ function generateAiAssessment(){
       applyJdToData(wizard.data, jd, wizard.data.jdFile, false);
       wizard.data.build = "ai";
       wizard.data.aiPhase = "";
-      if(fullProduct()){
+      if(wizard.data.focusedCreate){
+        wizard.data.aiPhase = "preview";
+        wizard.data.focusedPanel = "";
+        toast("Assessment ready. Review the defaults, then publish.");
+        renderWorkspace();
+        requestAnimationFrame(()=>showAppClickPointer(".focused-publish", "Publish assessment"));
+      } else if(fullProduct()){
         wizard.step = 1;
         toast("AI generated the assessment. Continue through Basic Info, Questions, and Settings.");
         renderWorkspace();
@@ -6201,6 +6297,7 @@ function creatingScreenHtml(title, steps, lines){
   const at = d.aiCreateAt||0;
   const pct = d.aiPct||12;
   const secs = d.aiCreateDeadline ? Math.max(0, Math.ceil((d.aiCreateDeadline-Date.now())/1000)) : Math.min(59, at * 2 + 1);
+  const creatingPreview = !!d.focusedCreate;
   const rows = steps.map((s,i)=>{
     return `<div class="cya-step ${i<at?"ok":i===at?"on":""}">
       <i>${i<at?"✓":i===at?"✦":""}</i>
@@ -6216,7 +6313,7 @@ function creatingScreenHtml(title, steps, lines){
       </div>
       <h1><span>✦</span> ${escapeHtml(title)} <span>✦</span></h1>
       <p class="cya-sub">${lines[Math.min(at, lines.length-1)]}</p>
-      <p class="cya-countdown">Auto-publishing in ${secs} seconds</p>
+      <p class="cya-countdown">${creatingPreview?"Preparing your preview":"Auto-publishing"} in ${secs} seconds</p>
       <div class="cya-track"><i style="width:${pct}%"></i></div>
       <div class="cya-pct">${pct}%</div>
       <div class="cya-steps">${rows}</div>
@@ -6225,6 +6322,79 @@ function creatingScreenHtml(title, steps, lines){
         <div><b>Did you know?</b><p>Skills-based hiring increases diversity by 50% and reduces time-to-hire by 40%.</p></div>
       </div>
     </div>
+  </div>`;
+}
+function focusedCreateHtml(){
+  const d = wizard.data;
+  const filter = d.focusedFilter || "all";
+  const items = SAMPLE_JDS.filter(j => filter==="all" || j.kind===filter);
+  const selected = jdById(d.jdId);
+  const custom = d.focusedCustomText || "";
+  const autoNote = d.focusedAutoStart
+    ? "Selected. We’ll start creating your assessment in 5 seconds."
+    : selected
+      ? `Ready to create ${selected.role} with recommended defaults.`
+      : "Choose a configured role or upload your own job description.";
+  return `<div class="mew focused-create">
+    <div class="focused-head">
+      <div>
+        <span class="focused-kicker">MeritEdge · fast setup</span>
+        <h1>Create your assessment</h1>
+        <p>Pick a ready-to-use role setup or upload a job description. We’ll configure the questions, duration, scoring, and candidate settings for you.</p>
+      </div>
+      <button class="focused-skip" type="button" onclick="appNav('meritedge')">Explore workspace later</button>
+    </div>
+    <div class="focused-body">
+      <section class="focused-templates">
+        <div class="focused-section-head">
+          <div><span class="focused-kicker">Configured assessments</span><h2>Start with a role</h2><p>Everything is prefilled and ready to publish.</p></div>
+          <div class="focused-filters">
+            ${[["all","All roles"],["tech","Tech"],["nontech","Non-tech"]].map(([id,label])=>`<button type="button" class="${filter===id?"on":""}" onclick="setFocusedFilter('${id}')">${label}</button>`).join("")}
+          </div>
+        </div>
+        <div class="focused-jd-grid">${items.map(j=>focusedJdCardHtml(j, d.jdId)).join("")}</div>
+      </section>
+      <aside class="focused-upload">
+        <div class="focused-upload-icon">↑</div>
+        <span class="focused-kicker">Your own role</span>
+        <h2>Upload a job description</h2>
+        <p>Use a PDF, DOC, DOCX, or TXT file and we’ll match it to the closest assessment setup.</p>
+        <button class="focused-upload-btn" type="button" onclick="document.getElementById('focusedJdFile').click()">Upload JD</button>
+        <input id="focusedJdFile" type="file" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="onFocusedJdFile(event)">
+        <div class="focused-or"><span>or paste it here</span></div>
+        <textarea id="focusedJdText" placeholder="Paste your job description..." oninput="wizard.data.focusedCustomText=this.value">${escapeHtml(custom)}</textarea>
+        <small>Preview only · your file is not stored</small>
+      </aside>
+    </div>
+    <div class="focused-bottom">
+      <div><b>${selected ? escapeHtml(selected.role) : "No role selected"}</b><span>${autoNote}</span></div>
+      <button class="focused-primary" type="button" onclick="focusedCreateAssessment()" ${d.focusedAutoStart?"disabled":""}>${d.focusedAutoStart?"Creating soon…":"Create assessment"} <span>→</span></button>
+    </div>
+  </div>`;
+}
+function focusedPreviewHtml(){
+  const d = wizard.data;
+  const qs = d.questions || [];
+  const skills = String(d.skills||"").split(",").map(s=>s.trim()).filter(Boolean);
+  const panel = d.focusedPanel || "";
+  const panelHtml = panel==="questions"
+    ? `<section class="focused-detail-panel"><div class="focused-detail-head"><div><span class="focused-kicker">Included by default</span><h2>Questions</h2></div><button type="button" onclick="focusedTogglePanel('questions')">Close</button></div>${qs.map((q,i)=>`<div class="focused-question"><span>${String(i+1).padStart(2,"0")}</span><div><b>${escapeHtml(q.type||"Question")}</b><p>${escapeHtml(q.title||"")}</p></div></div>`).join("")}</section>`
+    : panel==="settings"
+      ? `<section class="focused-detail-panel"><div class="focused-detail-head"><div><span class="focused-kicker">Recommended defaults</span><h2>Settings</h2></div><button type="button" onclick="focusedTogglePanel('settings')">Close</button></div><div class="focused-settings"><div><b>Duration</b><span>${escapeHtml(String(d.duration||45))} minutes</span></div><div><b>Passing score</b><span>${escapeHtml(String(d.pass||70))}%</span></div><div><b>Integrity</b><span>Webcam and tab monitoring on</span></div><div><b>Candidate experience</b><span>Randomized question order</span></div></div></section>`
+      : "";
+  return `<div class="mew focused-preview">
+    <div class="focused-head">
+      <div><span class="focused-kicker">Assessment ready</span><h1>Review and publish</h1><p>Your assessment is configured with sensible defaults. Publish now, or inspect the questions and settings first.</p></div>
+      <button class="focused-skip" type="button" onclick="focusedBackToCreate()">← Change role</button>
+    </div>
+    <div class="focused-preview-card">
+      <div class="focused-preview-mark">✓</div>
+      <div class="focused-preview-copy"><span class="focused-kicker">Ready to publish</span><h2>${escapeHtml(d.name||"Assessment")}</h2><p>${escapeHtml(d.description||`A role-specific assessment for ${d.role||"your next hire"}.`)}</p><div class="focused-meta"><span>${qs.length} questions</span><span>${escapeHtml(String(d.duration||45))} min</span><span>${escapeHtml(d.role||"Configured role")}</span></div></div>
+    </div>
+    <div class="focused-skill-row">${skills.slice(0,6).map(s=>`<span>${escapeHtml(s)}</span>`).join("")}</div>
+    <div class="focused-review-actions"><button type="button" onclick="focusedTogglePanel('questions')">View questions <span>${qs.length}</span></button><button type="button" onclick="focusedTogglePanel('settings')">View settings</button><button class="focused-publish" type="button" onclick="publishAssessment()">Publish assessment <span>→</span></button></div>
+    ${panelHtml}
+    <div class="focused-next"><span>Next step after publishing</span><b>Invite yourself to try the candidate experience</b><small>We’ll take you to the invite page after publishing.</small></div>
   </div>`;
 }
 function renderAssessWizard(){
@@ -6242,6 +6412,8 @@ function renderAssessWizard(){
     ];
     return creatingScreenHtml("Creating Your Assessment", steps, ["Reading the job description...","Selecting questions...","Selecting questions...","Preparing your assessment","Finishing up..."]);
   }
+  if(d.focusedCreate && d.aiPhase==="focused") return focusedCreateHtml();
+  if(d.focusedCreate && d.aiPhase==="preview") return focusedPreviewHtml();
   if(!d.build || d.aiPhase==="choose"){
     return meWizardChrome("Create Assessment", `<div class="mec">
       <h2>Choose how you'd like to build your assessment</h2>
@@ -6915,6 +7087,7 @@ function renderWorkspace(){
   const u = currentUser();
   if(!u){ showView("login"); return; }
   document.body.classList.toggle("me-wiz-on", !!(appDetail?.type==="wizard" && wizard));
+  document.body.classList.toggle("preview-focus", !!(u.kind==="preview" && appDetail?.type==="wizard" && wizard?.data?.focusedCreate));
   syncPremiumSample();
   renderNav();
   document.getElementById("teHello").innerHTML = greeting(u.name);
@@ -7380,6 +7553,8 @@ Object.assign(window, {
   toggleDemoMute, toggleKebab, toggleListPop, togglePw, toggleTheme, toggleTourMute,
   tourGoBack, tourJumpAi, tourJumpProctor, tryDemoYourself, upgradeFromTrialMail,
   verifyDemoCode, wizBack, wizGoto, wizNext, wizSetIvSource, wizSetMethod, wizUseTemplate,
+  focusedBackToCreate, focusedCreateAssessment, focusedSelectJd, focusedTogglePanel,
+  onFocusedJdFile, setFocusedFilter,
   wowFromCta
 });
 
