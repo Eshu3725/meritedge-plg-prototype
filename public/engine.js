@@ -99,6 +99,29 @@ function domainOf(email){ return (email.split("@")[1]||"").toLowerCase(); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function initials(name){ return String(name||"U").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase(); }
 function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("on"); setTimeout(()=>el.classList.remove("on"), 3200); }
+let appPointerSelector = "";
+function hideAppClickPointer(){
+  appPointerSelector = "";
+  document.getElementById("appClickPointer")?.classList.remove("on");
+}
+function positionAppClickPointer(){
+  if(!appPointerSelector) return;
+  const ptr = document.getElementById("appClickPointer");
+  const target = document.querySelector(appPointerSelector);
+  if(!ptr || !target) return;
+  const r = target.getBoundingClientRect();
+  ptr.style.left = Math.round(r.left + r.width * .72) + "px";
+  ptr.style.top = Math.round(r.top + r.height * .5) + "px";
+  ptr.classList.add("on");
+}
+function showAppClickPointer(selector, label){
+  if(!selector) return;
+  hideAppClickPointer();
+  appPointerSelector = selector;
+  const ptr = document.getElementById("appClickPointer");
+  if(ptr?.querySelector("span")) ptr.querySelector("span").textContent = label || "Click here";
+  requestAnimationFrame(positionAppClickPointer);
+}
 
 const THEME_SUN = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
 const THEME_MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
@@ -1670,6 +1693,11 @@ let settingsTab = "proctoring";
 let billCycle = "monthly";
 let checkout = null;
 let checkoutTimer = null;
+let publishInviteTimer = null;
+let publishInviteCountdownTimer = null;
+let publishInviteSeconds = 0;
+let autoGenerateTimer = null;
+const AUTO_PAGE_WAIT = 5000;
 let tour = null;
 let signupReason = "trial";
 let pendingInvite = null;
@@ -2940,6 +2968,11 @@ function fillDemoJd(asInterview){
   if(!wizard) return;
   const jd = jdByRole(intentRole());
   applyJdToData(wizard.data, jd, null, !!asInterview);
+  wizard.data.jdId = jd.id;
+  wizard.data.jdFile = jd.file;
+  wizard.data.jdParsing = false;
+  wizard.data.method = "jd";
+  wizard.data.aiTab = "jd";
   if(asInterview){
     wizard.data.ivSource = "jd";
   } else {
@@ -2948,6 +2981,26 @@ function fillDemoJd(asInterview){
     wizard.data.aiTab = "jd";
   }
   renderWorkspace();
+}
+function showDemoInvitePage(){
+  const item = assessments[0];
+  closeDemoReel();
+  openPostPublishInvite("assessment", item?.id || "a1");
+}
+function openPostPublishInvite(kind, id){
+  const u = currentUser();
+  wizard = null;
+  pendingInvite = {kind, id};
+  if(isPreviewUser(u)){
+    openInviteYourselfGate();
+    return;
+  }
+  pendingInvite = null;
+  appSection = kind === "interview" ? "ai-interviewer" : "meritedge";
+  appDetail = {type:"invite", kind, id, emails:u?.email || ""};
+  showView("workspace");
+  requestAnimationFrame(()=>showAppClickPointer(".te-wiz-foot .te-btn:not(.ghost)", "Invite yourself"));
+  toast(`${kind === "interview" ? "AI interview" : "Assessment"} published. Invite yourself to try the candidate experience.`);
 }
 function applyDemoScene(s){
   aiCreateGen += 1;
@@ -3057,6 +3110,10 @@ function tickDemo(){
   const scene = DEMO_SCENES[demoReel.i];
   const until = demoReel.started + demoCueAt(demoReel.i) + scene.ms;
   if(Date.now() >= until - 16){
+    if(scene.afterInvite){
+      showDemoInvitePage();
+      return;
+    }
     if(demoReel.i < DEMO_SCENES.length-1) playDemoScene(demoReel.i+1);
     else endDemoReel();
     return;
@@ -3494,9 +3551,14 @@ function currentUser(){ return findUser(state.session); }
 function appNav(section){
   if(tour) return;
   openKebab = null;
+  hideAppClickPointer();
   if(section==="home") section = "meritedge";
   aiCreateGen += 1;
   if(aiCreateTimer){ clearTimeout(aiCreateTimer); aiCreateTimer = null; }
+  if(autoGenerateTimer){ clearTimeout(autoGenerateTimer); autoGenerateTimer = null; }
+  if(publishInviteTimer){ clearTimeout(publishInviteTimer); publishInviteTimer = null; }
+  if(publishInviteCountdownTimer){ clearInterval(publishInviteCountdownTimer); publishInviteCountdownTimer = null; }
+  publishInviteSeconds = 0;
   appSection = section;
   appDetail = null;
   wizard = null;
@@ -3669,9 +3731,16 @@ function startCreateAssessment(){
       cutoff:70
     }
   };
+  if(!full){
+    applyJdToData(wizard.data, jdByRole(role), null, false);
+    wizard.data.build = "ai";
+    wizard.data.aiPhase = "generator";
+    wizard.data.aiTab = "jd";
+  }
   appSection = "meritedge";
   appDetail = {type:"wizard"};
   renderWorkspace();
+  if(!full) scheduleAutoAssessmentGeneration();
 }
 function startCreateInterview(assessmentId){
   if(tour){
@@ -3720,9 +3789,14 @@ function startCreateInterview(assessmentId){
       topics: sampleTopics(linked ? linked.role || linked.title : "this role")
     }
   };
+  if(!full){
+    applyJdToData(wizard.data, jdByRole(intentRole()), null, true);
+    wizard.data.ivSource = "jd";
+  }
   appSection = "ai-interviewer";
   appDetail = {type:"wizard"};
   renderWorkspace();
+  if(!full) scheduleAutoInterviewGeneration();
 }
 function startInvite(kind, id){
   pendingInvite = {kind, id};
@@ -3736,6 +3810,7 @@ function startInvite(kind, id){
   appSection = kind==="interview" ? "ai-interviewer" : "meritedge";
   appDetail = {type:"invite", kind, id, emails: u?.email || ""};
   renderWorkspace();
+  requestAnimationFrame(()=>showAppClickPointer(".te-wiz-foot .te-btn:not(.ghost)", "Invite yourself"));
 }
 function wizVal(id){ return document.getElementById(id)?.value ?? ""; }
 function captureWizard(){
@@ -3927,7 +4002,27 @@ function publishAssessment(){
   wizard.publishedId = id;
   wizard.step = "done";
   toast("MeritEdge assessment published.");
+  if(publishInviteTimer) clearTimeout(publishInviteTimer);
+  if(publishInviteCountdownTimer) clearInterval(publishInviteCountdownTimer);
+  publishInviteSeconds = 5;
   renderWorkspace();
+  publishInviteCountdownTimer = setInterval(()=>{
+    if(appDetail?.type!=="wizard" || wizard?.publishedId!==id || wizard.step!=="done"){
+      clearInterval(publishInviteCountdownTimer);
+      publishInviteCountdownTimer = null;
+      publishInviteSeconds = 0;
+      return;
+    }
+    publishInviteSeconds = Math.max(0, publishInviteSeconds-1);
+    renderWorkspace();
+  }, 1000);
+  publishInviteTimer = setTimeout(()=>{
+    publishInviteTimer = null;
+    if(publishInviteCountdownTimer){ clearInterval(publishInviteCountdownTimer); publishInviteCountdownTimer = null; }
+    publishInviteSeconds = 0;
+    if(appDetail?.type!=="wizard" || wizard?.publishedId!==id || wizard.step!=="done") return;
+    openPostPublishInvite("assessment", id);
+  }, 5000);
 }
 function clearAha(){
   if(aha?.timers) aha.timers.forEach(t=>clearTimeout(t));
@@ -4233,8 +4328,28 @@ function publishInterview(){
   });
   wizard.publishedId = id;
   wizard.step = "done";
-  toast("AI interview published.");
+  if(publishInviteTimer) clearTimeout(publishInviteTimer);
+  if(publishInviteCountdownTimer) clearInterval(publishInviteCountdownTimer);
+  publishInviteSeconds = 5;
+  toast("AI interview published. Redirecting to Invite yourself...");
   renderWorkspace();
+  publishInviteCountdownTimer = setInterval(()=>{
+    if(!wizard || wizard.step!=="done" || wizard.publishedId!==id || appDetail?.type!=="wizard"){
+      clearInterval(publishInviteCountdownTimer);
+      publishInviteCountdownTimer = null;
+      return;
+    }
+    publishInviteSeconds = Math.max(0, publishInviteSeconds - 1);
+    renderWorkspace();
+  }, 1000);
+  publishInviteTimer = setTimeout(()=>{
+    publishInviteTimer = null;
+    if(publishInviteCountdownTimer) clearInterval(publishInviteCountdownTimer);
+    publishInviteCountdownTimer = null;
+    if(!wizard || wizard.step!=="done" || wizard.publishedId!==id || appDetail?.type!=="wizard") return;
+    publishInviteSeconds = 0;
+    openPostPublishInvite("interview", id);
+  }, 5000);
 }
 let inviteMail = null;
 function inviteStamp(offsetDays){
@@ -4425,17 +4540,20 @@ const CX_QS = __D.examQuestions;
 function openCandExam(){
   if(!inviteMail) return;
   clearTimeout(candExam?._t);
+  clearTimeout(candExam?._auto);
   const lite = freeCandidate();
-  candExam = {step:"verify", checks:Array(lite?3:5).fill(0), pick:{}, agree:false, photo:false, qn:0, tab:false, lite};
+  candExam = {step:"verify", checks:Array(lite?3:5).fill(0), pick:{}, agree:false, photo:false, qn:0, tab:false, lite, auto:lite, _auto:null};
   const el = document.getElementById("candExamOverlay");
   if(!el) return;
   el.classList.add("open");
   document.body.style.overflow = "hidden";
   drawCandExam();
-  candExam._t = setTimeout(()=>{ if(candExam?.step==="verify") cxGo("check"); }, 1800);
+  candExam._t = setTimeout(()=>{ if(candExam?.step==="verify") cxGo("check"); }, AUTO_PAGE_WAIT);
 }
 function closeCandExam(){
+  hideAppClickPointer();
   clearTimeout(candExam?._t);
+  clearTimeout(candExam?._auto);
   clearTimeout(ivSess?._t);
   try{ window.speechSynthesis?.cancel(); }catch(e){}
   candExam = null;
@@ -4455,15 +4573,57 @@ function cxGo(step){
   if(step==="check"){
     candExam.checks = Array(candExam.lite?3:5).fill(0);
     candExam.ready = false;
-    setTimeout(cxTickCheck, 350);
+    setTimeout(cxTickCheck, AUTO_PAGE_WAIT);
   }
   if(step==="q3" && !candExam.lite) candExam.tab = true;
   drawCandExam();
+  if(candExam.auto && step==="sec1"){
+    clearTimeout(candExam._auto);
+    candExam._auto = setTimeout(()=>{ if(candExam?.step==="sec1") cxGo("q1"); }, AUTO_PAGE_WAIT);
+  }
+  if(candExam.auto && /^q[123]$/.test(step)) cxAutoAnswer(step);
+}
+function cxAutoAnswer(step){
+  if(!candExam?.auto || candExam.step!==step || candExam.pick[step]) return;
+  const qi = step==="q1" ? 0 : step==="q2" ? 1 : 2;
+  const answer = CX_QS[qi]?.opts?.[0]?.k;
+  if(!answer) return;
+  clearTimeout(candExam._auto);
+  showAppClickPointer(`[data-cx-option="${answer}"]`, "Selecting answer");
+  candExam._auto = setTimeout(()=>{
+    if(!candExam || candExam.step!==step) return;
+    cxPick(answer);
+    candExam._auto = setTimeout(()=>{
+      if(!candExam || candExam.step!==step) return;
+      if(step==="q3"){
+        cxFinishExam();
+        showAppClickPointer(".isucc .te-btn", "View report");
+        candExam._auto = setTimeout(()=>{
+          if(candExam?.step==="done") openInvitedReport();
+        }, AUTO_PAGE_WAIT);
+      } else {
+        cxNextQ();
+      }
+    }, AUTO_PAGE_WAIT);
+  }, AUTO_PAGE_WAIT);
 }
 function cxTickCheck(){
   if(!candExam || candExam.step!=="check") return;
   const i = candExam.checks.findIndex(v=>v===0);
-  if(i<0){ candExam.ready = true; candExam.step = "details"; drawCandExam(); return; }
+  if(i<0){
+    candExam.ready = true;
+    candExam.step = "details";
+    drawCandExam();
+    if(candExam.auto){
+      clearTimeout(candExam._auto);
+      candExam._auto = setTimeout(()=>{
+        if(!candExam || candExam.step!=="details") return;
+        candExam.agree = true;
+        cxGo("sec1");
+      }, AUTO_PAGE_WAIT);
+    }
+    return;
+  }
   candExam.checks[i] = 1;
   drawCandExam();
   candExam._t = setTimeout(cxTickCheck, 420);
@@ -4477,6 +4637,7 @@ function cxNextQ(){
   else cxGo("fin1");
 }
 function cxFinishExam(){
+  hideAppClickPointer();
   finishSelfInviteAttempt();
   cxGo("done");
 }
@@ -4616,7 +4777,7 @@ function drawCandExam(){
       const go = i<3 ? `onclick="cxGo('${["q1","q2","q3"][i]}')"` : "";
       return `<button type="button" class="qnav-n ${cls}" ${go}>${i+1}</button>`;
     }).join("");
-    const opts = q.opts.map(o=>`<button class="qopt ${sel===o.k?"on":""}" type="button" role="radio" onclick="cxPick('${o.k}')"><b>${o.k}</b><span>${escapeHtml(o.t)}</span><em>${o.k}</em></button>`).join("");
+    const opts = q.opts.map(o=>`<button class="qopt ${sel===o.k?"on":""}" data-cx-option="${o.k}" type="button" role="radio" onclick="cxPick('${o.k}')"><b>${o.k}</b><span>${escapeHtml(o.t)}</span><em>${o.k}</em></button>`).join("");
     const last = qi===2 && lite;
     el.innerHTML = `<div class="qtest">
       <header class="qtest-head">
@@ -4742,6 +4903,7 @@ function ivAlex(item){ return (item && item.interviewer) || "Alex"; }
 function openIvSession(){
   if(!inviteMail) return;
   clearTimeout(ivSess?._t);
+  clearTimeout(ivSess?._auto);
   const cand = inviteCandidate(inviteMail.kind, inviteMail.id, inviteMail.candId) || {};
   const parts = String(cand.name||"Candidate").trim().split(/\s+/);
   const lite = freeCandidate();
@@ -4752,6 +4914,8 @@ function openIvSession(){
     turn:0,
     said:false,
     lite,
+    auto:lite,
+    _auto:null,
     checks: lite
       ? {auth:1, mic:0, browser:1, session:1}
       : {auth:1,mic:0,cam:0,audio:1,server:1,session:1}
@@ -4761,14 +4925,53 @@ function openIvSession(){
   el.classList.add("open");
   document.body.style.overflow = "hidden";
   drawIvSession();
+  if(lite){
+    showAppClickPointer(".cx-photo .cx-cta", "Confirm name");
+    ivSess._auto = setTimeout(()=>{
+      if(ivSess?.step==="name") ivUseName();
+    }, AUTO_PAGE_WAIT);
+  }
 }
 function ivGo(step){
   if(!ivSess) return;
   ivSess.step = step;
-  if(step==="mic"){ ivSess.heard=false; setTimeout(()=>{ if(ivSess?.step==="mic"){ ivSess.heard=true; drawIvSession(); } }, 1200); }
+  if(step==="mic"){
+    ivSess.heard=false;
+    setTimeout(()=>{
+      if(ivSess?.step!=="mic") return;
+      ivSess.heard=true;
+      drawIvSession();
+      if(ivSess.auto){
+        showAppClickPointer(".ivs-mic .cx-cta", "Continue");
+        ivSess._auto = setTimeout(()=>{
+          if(ivSess?.step==="mic" && ivSess.heard) ivMicOk();
+        }, 1500);
+      }
+    }, AUTO_PAGE_WAIT - 1500);
+  }
   if(step==="face"){ ivSess.faced=false; setTimeout(()=>{ if(ivSess?.step==="face"){ ivSess.faced=true; drawIvSession(); } }, 1100); }
   if(step==="connect"){ ivSess._t = setTimeout(()=>{ if(ivSess?.step==="connect") ivGo("live"); }, ivSess.lite?600:1400); }
-  if(step==="live"){ ivSess.said=false; ivSess.speaking=false; ivSpeakCurrent(); }
+  if(step==="live"){
+    ivSess.said=false;
+    ivSess.speaking=false;
+    ivSpeakCurrent();
+    if(ivSess.auto){
+      ivSess._auto = setTimeout(()=>{
+        if(ivSess?.step!=="live" || ivSess.said) return;
+        ivAnswer();
+        showAppClickPointer(".ailive-go", "Submit answer");
+        ivSess._auto = setTimeout(()=>{
+          if(ivSess?.step==="live" && ivSess.said) ivFinish();
+        }, AUTO_PAGE_WAIT);
+      }, AUTO_PAGE_WAIT);
+    }
+  }
+  if(step==="lobby" && ivSess.auto && ivSess.checks.mic){
+    showAppClickPointer(".ivs-panel .cx-cta", "Start interview");
+    ivSess._auto = setTimeout(()=>{
+      if(ivSess?.step==="lobby") ivGo("live");
+    }, AUTO_PAGE_WAIT);
+  }
   drawIvSession();
 }
 function ivSpeakCurrent(){
@@ -4821,6 +5024,12 @@ function ivNextTurn(){
 function ivFinish(){
   finishSelfInviteAttempt();
   ivGo("thanks");
+  if(ivSess?.auto){
+    ivSess._auto = setTimeout(()=>{
+      if(ivSess?.step==="thanks") openInvitedReport();
+    }, AUTO_PAGE_WAIT);
+    showAppClickPointer(".ivs-thanks .te-btn", "View report");
+  }
 }
 function drawIvSession(){
   const el = document.getElementById("candExamOverlay");
@@ -5115,6 +5324,7 @@ function buildInterviewReport(iv, cand){
   };
 }
 function openCandidateReport(kind, id, candId){
+  hideAppClickPointer();
   wizard = null;
   appSection = kind==="interview" ? "ai-interviewer" : "meritedge";
   appDetail = {type:"report", kind, id, candId};
@@ -5797,8 +6007,31 @@ function pickAssessBuild(mode){
   }
   wizard.data.aiPhase = "generator";
   wizard.data.aiTab = wizard.data.aiTab || "jd";
+  if(!wizard.data.jdId && !(wizard.data.jdText||"").trim()){
+    applyJdToData(wizard.data, jdByRole(intentRole()), null, false);
+  }
   wizard.step = 0;
   renderWorkspace();
+  scheduleAutoAssessmentGeneration();
+}
+function scheduleAutoAssessmentGeneration(){
+  if(demoReel || tour || !wizard || wizard.kind!=="assessment") return;
+  if(autoGenerateTimer) clearTimeout(autoGenerateTimer);
+  autoGenerateTimer = setTimeout(()=>{
+    autoGenerateTimer = null;
+    if(!wizard || wizard.kind!=="assessment" || wizard.data.build!=="ai" || wizard.data.aiPhase!=="generator" || !wizard.data.jdId) return;
+    generateAiAssessment();
+  }, AUTO_PAGE_WAIT);
+}
+function scheduleAutoInterviewGeneration(){
+  if(demoReel || tour || !wizard || wizard.kind!=="interview") return;
+  if(autoGenerateTimer) clearTimeout(autoGenerateTimer);
+  autoGenerateTimer = setTimeout(()=>{
+    autoGenerateTimer = null;
+    if(!wizard || wizard.kind!=="interview" || wizard.data.ivSource!=="jd" || !wizard.data.jdId) return;
+    if(wizard.data.aiPhase==="creating") return;
+    generateAiInterview();
+  }, AUTO_PAGE_WAIT);
 }
 function setAiTab(tab){
   if(!wizard) return;
@@ -5842,13 +6075,14 @@ function generateAiAssessment(){
   wizard.data.aiPhase = "creating";
   wizard.data.aiCreateAt = 0;
   wizard.data.aiPct = 12;
+  wizard.data.aiCreateDeadline = Date.now() + 5000;
   renderWorkspace();
   const tick = i => {
     if(gen!==aiCreateGen || !wizard) return;
     wizard.data.aiCreateAt = i;
     wizard.data.aiPct = Math.min(100, [12,38,62,88,100][i]||100);
     renderWorkspace();
-    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 780);
+    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 900);
     else aiCreateTimer = setTimeout(()=>{
       if(gen!==aiCreateGen || !wizard) return;
       const jd = jdById(wizard.data.jdId) || jdByRole(intentRole());
@@ -5862,7 +6096,7 @@ function generateAiAssessment(){
       } else {
         publishAssessment();
       }
-    }, 700);
+    }, 1050);
   };
   aiCreateTimer = setTimeout(()=>tick(0), 350);
 }
@@ -5883,13 +6117,14 @@ function generateAiInterview(){
   wizard.data.aiPhase = "creating";
   wizard.data.aiCreateAt = 0;
   wizard.data.aiPct = 12;
+  wizard.data.aiCreateDeadline = Date.now() + 5000;
   renderWorkspace();
   const tick = i => {
     if(gen!==aiCreateGen || !wizard) return;
     wizard.data.aiCreateAt = i;
     wizard.data.aiPct = Math.min(100, [12,38,62,88,100][i]||100);
     renderWorkspace();
-    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 780);
+    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 900);
     else aiCreateTimer = setTimeout(()=>{
       if(gen!==aiCreateGen || !wizard) return;
       const jd = jdById(wizard.data.jdId) || jdByRole(wizard.data.role || intentRole());
@@ -5902,7 +6137,7 @@ function generateAiInterview(){
       } else {
         publishInterview();
       }
-    }, 700);
+    }, 1050);
   };
   aiCreateTimer = setTimeout(()=>tick(0), 350);
 }
@@ -5965,7 +6200,7 @@ function creatingScreenHtml(title, steps, lines){
   const d = wizard.data;
   const at = d.aiCreateAt||0;
   const pct = d.aiPct||12;
-  const secs = Math.min(59, at * 2 + 1);
+  const secs = d.aiCreateDeadline ? Math.max(0, Math.ceil((d.aiCreateDeadline-Date.now())/1000)) : Math.min(59, at * 2 + 1);
   const rows = steps.map((s,i)=>{
     return `<div class="cya-step ${i<at?"ok":i===at?"on":""}">
       <i>${i<at?"✓":i===at?"✦":""}</i>
@@ -5981,6 +6216,7 @@ function creatingScreenHtml(title, steps, lines){
       </div>
       <h1><span>✦</span> ${escapeHtml(title)} <span>✦</span></h1>
       <p class="cya-sub">${lines[Math.min(at, lines.length-1)]}</p>
+      <p class="cya-countdown">Auto-publishing in ${secs} seconds</p>
       <div class="cya-track"><i style="width:${pct}%"></i></div>
       <div class="cya-pct">${pct}%</div>
       <div class="cya-steps">${rows}</div>
@@ -6090,7 +6326,11 @@ function renderAssessWizard(){
         </div>
       </article>`;
     }).join("");
+    const redirectNotice = publishInviteSeconds > 0
+      ? `<div class="aha-live pub-redirect" role="status">Assessment published<span>Redirecting to Invite yourself in ${publishInviteSeconds} seconds...</span></div>`
+      : "";
     return `<div class="mew me-published">
+      ${redirectNotice}
       <header class="pub-hero">
         <div class="pub-mark">✓</div>
         <div class="pub-copy">
@@ -6412,7 +6652,11 @@ function renderInterviewWizard(){
           <p>${escapeHtml(q.title||"")}</p>
         </div>
       </article>`).join("");
+    const redirectNotice = publishInviteSeconds > 0
+      ? `<div class="aha-live pub-redirect" role="status">AI Interview published<span>Redirecting to Sign up to invite yourself in ${publishInviteSeconds} seconds...</span></div>`
+      : "";
     return `<div class="mew me-published">
+      ${redirectNotice}
       <header class="pub-hero">
         <div class="pub-mark">✓</div>
         <div class="pub-copy">
@@ -7101,7 +7345,8 @@ document.addEventListener("keydown", e => {
     closeSignup(); closeInfo(); closeIntentPicker(); closeReady(); closeSitIn(); closeGstMail(); closeReferShare(); if(wow?.canSkip) closeWow(); openKebab=null; if(tour) stopTour();
   }
 });
-window.addEventListener("resize", ()=>{ if(demoReel) syncDemoFrame(); });
+window.addEventListener("resize", ()=>{ if(demoReel) syncDemoFrame(); positionAppClickPointer(); });
+window.addEventListener("scroll", positionAppClickPointer, true);
 document.addEventListener("click", e => {
   if(openKebab && !e.target.closest(".kebab, .kmenu")){ openKebab = null; renderWorkspace(); }
   if(!e.target.closest(".crep-dl")) document.querySelectorAll(".crep-menu.open").forEach(el=>el.classList.remove("open"));

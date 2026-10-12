@@ -1,5 +1,5 @@
 {
-  "duration": 108500,
+  "duration": 107000,
   "scenes": [
     {
       "id": "hero",
@@ -67,12 +67,13 @@
     },
     {
       "id": "publish",
-      "ms": 6500,
+      "ms": 5000,
       "chapter": "Create",
       "line": "Review and publish. The assessment from the JD is ready.",
       "wizard": "assessment",
       "wizStep": 4,
       "jdShow": true,
+      "afterInvite": true,
       "caption": "Go live in one click",
       "benefit": "Published to MeritEdge. Invite yourself next.",
       "frame": "tilt-right",
