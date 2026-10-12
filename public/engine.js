@@ -2649,13 +2649,21 @@ function beginProductTour(){
   clearCheckoutTimer();
   checkout = null;
   showView("workspace");
+  if(!hasTourUserActivation()){
+    openTourIntro();
+    return;
+  }
   startDemoReel();
+}
+function hasTourUserActivation(){
+  return !navigator.userActivation || navigator.userActivation.isActive;
 }
 function openTourIntro(){
   const el = document.getElementById("tourIntro");
   const stage = document.getElementById("tourIntroStage");
   if(!el || !stage){ startDemoReel(); return; }
   const gen = ++tourIntroGen;
+  const hasActivation = hasTourUserActivation();
   if(tourIntroTimer){ clearTimeout(tourIntroTimer); tourIntroTimer = null; }
   document.body.classList.add("tour-intro-open");
   el.classList.add("open");
@@ -2663,15 +2671,16 @@ function openTourIntro(){
     <h1 id="tourIntroTitle">The future of assessments<br>&amp; AI interviewing</h1>
     <div class="ti-bar" aria-hidden="true"><i></i></div>
     <p class="ti-pill">Welcome to the future of hiring.</p>
-    <p class="ti-hint speak" id="tiSpeakHint"><span class="ti-speak" aria-hidden="true"><i></i><i></i><i></i></span> Your product tour is about to begin</p>
-    <button class="ti-skip" type="button" onclick="skipTourIntro()">Skip intro →</button>`;
+    <p class="ti-hint ${hasActivation?"speak":""}" id="tiSpeakHint"><span class="ti-speak" aria-hidden="true"><i></i><i></i><i></i></span> ${hasActivation?"Your product tour is about to begin":"Click below to start the tour with voice"}</p>
+    <button class="ti-skip" type="button" onclick="skipTourIntro()">${hasActivation?"Skip intro →":"Start tour with voice →"}</button>`;
   introVoiceStarted = false;
-  speakTourIntro();
-  armIntroVoiceUnlock();
-  tourIntroTimer = setTimeout(()=>{
-    if(gen !== tourIntroGen) return;
-    startDemoReel();
-  }, 4200);
+  if(hasActivation){
+    speakTourIntro();
+    tourIntroTimer = setTimeout(()=>{
+      if(gen !== tourIntroGen) return;
+      startDemoReel();
+    }, 4200);
+  }
 }
 function skipTourIntro(){
   startDemoReel();
