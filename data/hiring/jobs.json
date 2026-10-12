@@ -5,6 +5,7 @@
     "file": "SPD_Job_Description.pdf",
     "match": "designer",
     "kind": "nontech",
+    "top": true,
     "duration": "45",
     "ivDuration": "25",
     "skills": [
@@ -60,6 +61,7 @@
     "file": "SWE_Job_Description.pdf",
     "match": "engineer",
     "kind": "tech",
+    "top": true,
     "duration": "60",
     "ivDuration": "30",
     "skills": [
@@ -115,6 +117,7 @@
     "file": "CSM_Job_Description.pdf",
     "match": "success",
     "kind": "nontech",
+    "top": true,
     "duration": "45",
     "ivDuration": "25",
     "skills": [
@@ -166,6 +169,7 @@
     "file": "DA_Job_Description.pdf",
     "match": "analyst",
     "kind": "tech",
+    "top": true,
     "duration": "45",
     "ivDuration": "25",
     "skills": [
@@ -217,6 +221,7 @@
     "file": "FE_Job_Description.pdf",
     "match": "frontend",
     "kind": "tech",
+    "top": true,
     "duration": "50",
     "ivDuration": "25",
     "skills": [
@@ -272,6 +277,7 @@
     "file": "AE_Job_Description.pdf",
     "match": "sales",
     "kind": "nontech",
+    "top": true,
     "duration": "40",
     "ivDuration": "25",
     "skills": [
@@ -319,6 +325,300 @@
         "mins": 7,
         "prompt": "How do you know a commit is real?"
       }
+    ]
+  },
+  {
+    "id": "be",
+    "role": "Backend Engineer",
+    "file": "BE_Job_Description.pdf",
+    "match": "backend",
+    "kind": "tech",
+    "duration": "60",
+    "ivDuration": "30",
+    "skills": ["APIs", "Databases", "Distributed systems", "Testing"],
+    "excerpt": "Build dependable backend services, evolve APIs safely, and make pragmatic tradeoffs across data, performance, and reliability.",
+    "questions": [
+      {"type": "MCQ", "title": "Which signal best reveals an API is becoming a bottleneck?"},
+      {"type": "Written", "title": "Design an idempotent endpoint for retryable payment requests."},
+      {"type": "Written", "title": "How would you investigate an intermittent production timeout?"}
+    ],
+    "topics": [
+      {"title": "API design", "mins": 8, "prompt": "Walk through a backwards-compatible API change."},
+      {"title": "Reliability", "mins": 8, "prompt": "Tell me about reducing a recurring production failure."},
+      {"title": "Data modeling", "mins": 7, "prompt": "How do you choose the right storage model?"}
+    ]
+  },
+  {
+    "id": "devops",
+    "role": "DevOps Engineer",
+    "file": "DevOps_Job_Description.pdf",
+    "match": "devops",
+    "kind": "tech",
+    "duration": "55",
+    "ivDuration": "30",
+    "skills": ["Cloud infrastructure", "CI/CD", "Observability", "Incident response"],
+    "excerpt": "Improve the delivery path and platform reliability with repeatable infrastructure, useful observability, and calm incident response.",
+    "questions": [
+      {"type": "MCQ", "title": "What should a deployment pipeline verify before production?"},
+      {"type": "Written", "title": "Describe a safe rollback plan for a database-backed release."},
+      {"type": "Written", "title": "How would you reduce friction without weakening change controls?"}
+    ],
+    "topics": [
+      {"title": "Delivery", "mins": 8, "prompt": "Tell me about making releases safer and faster."},
+      {"title": "Observability", "mins": 8, "prompt": "What makes a dashboard useful during an incident?"},
+      {"title": "Operations", "mins": 7, "prompt": "Walk through an incident from alert to follow-up."}
+    ]
+  },
+  {
+    "id": "qa",
+    "role": "QA Automation Engineer",
+    "file": "QA_Automation_Job_Description.pdf",
+    "match": "qa",
+    "kind": "tech",
+    "duration": "50",
+    "ivDuration": "25",
+    "skills": ["Test automation", "API testing", "Risk analysis", "Debugging"],
+    "excerpt": "Build a thoughtful quality strategy across UI and API layers, focusing automation where it catches meaningful customer risk.",
+    "questions": [
+      {"type": "MCQ", "title": "Which test belongs at the API layer instead of the browser layer?"},
+      {"type": "Written", "title": "How would you prioritize regression coverage before a risky launch?"},
+      {"type": "Written", "title": "Walk through debugging a flaky test that passes locally."}
+    ],
+    "topics": [
+      {"title": "Test strategy", "mins": 8, "prompt": "How do you balance speed, coverage, and confidence?"},
+      {"title": "Automation", "mins": 8, "prompt": "Tell me about a test suite you made more reliable."},
+      {"title": "Risk", "mins": 7, "prompt": "How do you decide what not to automate?"}
+    ]
+  },
+  {
+    "id": "security",
+    "role": "Security Engineer",
+    "file": "Security_Engineer_Job_Description.pdf",
+    "match": "security",
+    "kind": "tech",
+    "duration": "55",
+    "ivDuration": "30",
+    "skills": ["Threat modeling", "Cloud security", "Identity", "Risk communication"],
+    "excerpt": "Help teams ship securely through practical threat modeling, strong identity controls, and clear prioritization of real risk.",
+    "questions": [
+      {"type": "MCQ", "title": "Which finding should be prioritized first?"},
+      {"type": "Written", "title": "Describe a threat model for a new public-facing service."},
+      {"type": "Written", "title": "How do you explain a security risk to a non-technical leader?"}
+    ],
+    "topics": [
+      {"title": "Threat modeling", "mins": 8, "prompt": "Walk through how you find the highest-impact attack path."},
+      {"title": "Identity", "mins": 8, "prompt": "Tell me about improving access control without blocking teams."},
+      {"title": "Risk", "mins": 7, "prompt": "How do you make security recommendations actionable?"}
+    ]
+  },
+  {
+    "id": "pm",
+    "role": "Technical Product Manager",
+    "file": "TPM_Job_Description.pdf",
+    "match": "product manager",
+    "kind": "tech",
+    "duration": "50",
+    "ivDuration": "25",
+    "skills": ["Product strategy", "Technical fluency", "Prioritization", "Execution"],
+    "excerpt": "Turn customer and business problems into focused product bets, align technical teams, and make tradeoffs visible from discovery to launch.",
+    "questions": [
+      {"type": "MCQ", "title": "Which evidence is strongest before committing to a technical roadmap bet?"},
+      {"type": "Written", "title": "How would you turn a vague platform request into a scoped outcome?"},
+      {"type": "Written", "title": "Describe how you resolve a product and engineering priority conflict."}
+    ],
+    "topics": [
+      {"title": "Strategy", "mins": 8, "prompt": "Tell me about choosing what not to build."},
+      {"title": "Technical judgment", "mins": 8, "prompt": "How do you make architecture tradeoffs understandable?"},
+      {"title": "Execution", "mins": 7, "prompt": "Walk through keeping a cross-functional launch on track."}
+    ]
+  },
+  {
+    "id": "ml",
+    "role": "Machine Learning Engineer",
+    "file": "MLE_Job_Description.pdf",
+    "match": "machine learning",
+    "kind": "tech",
+    "duration": "60",
+    "ivDuration": "30",
+    "skills": ["Modeling", "Data pipelines", "Evaluation", "Production ML"],
+    "excerpt": "Build machine learning systems that are measurable, maintainable, and useful in production from data preparation through monitoring.",
+    "questions": [
+      {"type": "MCQ", "title": "Which evaluation split best protects against leakage?"},
+      {"type": "Written", "title": "Design a monitoring plan for a model whose input distribution changes."},
+      {"type": "Written", "title": "Walk through diagnosing a model whose offline score improved but user outcomes did not."}
+    ],
+    "topics": [
+      {"title": "Evaluation", "mins": 8, "prompt": "How do you know a model is improving the product?"},
+      {"title": "Pipelines", "mins": 8, "prompt": "Tell me about making training data trustworthy."},
+      {"title": "Production ML", "mins": 7, "prompt": "What do you monitor after a model ships?"}
+    ]
+  },
+  {
+    "id": "uxeng",
+    "role": "UX Engineer",
+    "file": "UX_Engineer_Job_Description.pdf",
+    "match": "ux engineer",
+    "kind": "tech",
+    "duration": "50",
+    "ivDuration": "25",
+    "skills": ["Design systems", "Interaction design", "React", "Accessibility"],
+    "excerpt": "Bridge design and engineering by turning interaction ideas into polished, accessible product experiences and reusable UI patterns.",
+    "questions": [
+      {"type": "MCQ", "title": "Which signal suggests a component belongs in the design system?"},
+      {"type": "Written", "title": "How would you prototype a complex interaction before building it?"},
+      {"type": "Written", "title": "Describe a time you improved an experience through design-engineering partnership."}
+    ],
+    "topics": [
+      {"title": "Design systems", "mins": 8, "prompt": "Tell me about a pattern you made reusable."},
+      {"title": "Interaction", "mins": 8, "prompt": "How do you make a complex flow feel simple?"},
+      {"title": "Accessibility", "mins": 7, "prompt": "How do you include accessibility in the build process?"}
+    ]
+  },
+  {
+    "id": "hrbp",
+    "role": "HR Business Partner",
+    "file": "HRBP_Job_Description.pdf",
+    "match": "hr business",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": ["Employee relations", "Coaching", "Policy judgment", "Communication"],
+    "excerpt": "Partner with leaders and employees through thoughtful people programs, clear guidance, and fair resolution of complex workplace moments.",
+    "questions": [
+      {"type": "MCQ", "title": "What should happen before advising on a sensitive employee concern?"},
+      {"type": "Written", "title": "How would you coach a manager through a difficult performance conversation?"},
+      {"type": "Written", "title": "Describe how you balance empathy, consistency, and confidentiality."}
+    ],
+    "topics": [
+      {"title": "Coaching", "mins": 8, "prompt": "Tell me about helping a leader handle a hard situation."},
+      {"title": "Judgment", "mins": 7, "prompt": "How do you make a fair people decision with incomplete information?"},
+      {"title": "Trust", "mins": 7, "prompt": "How do you build credibility with employees and leaders?"}
+    ]
+  },
+  {
+    "id": "finance",
+    "role": "Finance Manager",
+    "file": "Finance_Manager_Job_Description.pdf",
+    "match": "finance",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": ["Forecasting", "Business partnering", "Controls", "Analysis"],
+    "excerpt": "Own reliable planning and reporting, help leaders understand the business, and make financial decisions easier to act on.",
+    "questions": [
+      {"type": "MCQ", "title": "Which variance deserves investigation first?"},
+      {"type": "Written", "title": "How would you explain a forecast change to a non-finance leader?"},
+      {"type": "Written", "title": "Describe a time your analysis changed an operating decision."}
+    ],
+    "topics": [
+      {"title": "Forecasting", "mins": 8, "prompt": "Walk through how you build a forecast you can defend."},
+      {"title": "Controls", "mins": 7, "prompt": "Tell me about strengthening a financial control."},
+      {"title": "Partnership", "mins": 7, "prompt": "How do you make finance useful to an operating team?"}
+    ]
+  },
+  {
+    "id": "marketing",
+    "role": "Marketing Manager",
+    "file": "Marketing_Manager_Job_Description.pdf",
+    "match": "marketing",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": ["Go-to-market", "Positioning", "Campaigns", "Analytics"],
+    "excerpt": "Shape clear positioning and measurable campaigns that connect customer insight to pipeline, adoption, and durable brand trust.",
+    "questions": [
+      {"type": "MCQ", "title": "What should be clear before launching a new campaign?"},
+      {"type": "Written", "title": "How would you reposition a product that customers find difficult to understand?"},
+      {"type": "Written", "title": "Describe a launch where customer insight changed the message."}
+    ],
+    "topics": [
+      {"title": "Positioning", "mins": 8, "prompt": "Tell me about finding the sharpest customer message."},
+      {"title": "Go-to-market", "mins": 8, "prompt": "Walk through a launch plan from insight to measurement."},
+      {"title": "Analytics", "mins": 7, "prompt": "How do you separate campaign activity from impact?"}
+    ]
+  },
+  {
+    "id": "operations",
+    "role": "Operations Manager",
+    "file": "Operations_Manager_Job_Description.pdf",
+    "match": "operations",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": ["Process design", "Planning", "Problem solving", "Team leadership"],
+    "excerpt": "Make important work run smoothly through clear processes, useful operating rhythms, and practical improvement across teams.",
+    "questions": [
+      {"type": "MCQ", "title": "Which process problem should be fixed before adding more people?"},
+      {"type": "Written", "title": "How would you improve a handoff that regularly creates rework?"},
+      {"type": "Written", "title": "Describe a time you brought order to a rapidly changing operation."}
+    ],
+    "topics": [
+      {"title": "Process", "mins": 8, "prompt": "Tell me about removing friction from a key workflow."},
+      {"title": "Planning", "mins": 7, "prompt": "How do you plan when demand is uncertain?"},
+      {"title": "Leadership", "mins": 7, "prompt": "Walk through getting a team aligned on a new rhythm."}
+    ]
+  },
+  {
+    "id": "recruiter",
+    "role": "Talent Acquisition Partner",
+    "file": "Talent_Acquisition_Job_Description.pdf",
+    "match": "recruit",
+    "kind": "nontech",
+    "duration": "40",
+    "ivDuration": "25",
+    "skills": ["Sourcing", "Candidate experience", "Structured hiring", "Influencing"],
+    "excerpt": "Build trusted hiring partnerships, find exceptional candidates, and create a clear, equitable process from first message through offer.",
+    "questions": [
+      {"type": "MCQ", "title": "Which intake detail prevents the most hiring rework?"},
+      {"type": "Written", "title": "How would you improve a search with strong applicants but weak close rates?"},
+      {"type": "Written", "title": "Describe how you influence a hiring manager without owning the final decision."}
+    ],
+    "topics": [
+      {"title": "Sourcing", "mins": 8, "prompt": "Tell me about opening a hard-to-fill search."},
+      {"title": "Candidate experience", "mins": 7, "prompt": "How do you keep candidates informed and engaged?"},
+      {"title": "Hiring quality", "mins": 7, "prompt": "What makes a hiring process fair and useful?"}
+    ]
+  },
+  {
+    "id": "project",
+    "role": "Project Manager",
+    "file": "Project_Manager_Job_Description.pdf",
+    "match": "project manager",
+    "kind": "nontech",
+    "duration": "45",
+    "ivDuration": "25",
+    "skills": ["Planning", "Risk management", "Facilitation", "Communication"],
+    "excerpt": "Help teams deliver meaningful work with clear plans, visible risks, and lightweight coordination that keeps momentum high.",
+    "questions": [
+      {"type": "MCQ", "title": "Which risk should be escalated before the next status meeting?"},
+      {"type": "Written", "title": "How would you recover a project that is slipping without a clear owner?"},
+      {"type": "Written", "title": "Describe a time you aligned teams with conflicting priorities."}
+    ],
+    "topics": [
+      {"title": "Planning", "mins": 8, "prompt": "Walk through turning a large goal into an executable plan."},
+      {"title": "Risk", "mins": 7, "prompt": "Tell me about spotting a delivery risk early."},
+      {"title": "Alignment", "mins": 7, "prompt": "How do you keep decisions and ownership visible?"}
+    ]
+  },
+  {
+    "id": "account",
+    "role": "Account Manager",
+    "file": "Account_Manager_Job_Description.pdf",
+    "match": "account manager",
+    "kind": "nontech",
+    "duration": "40",
+    "ivDuration": "25",
+    "skills": ["Relationship building", "Commercial judgment", "Negotiation", "Follow-through"],
+    "excerpt": "Grow durable customer relationships through thoughtful account planning, clear communication, and commercial decisions that create mutual value.",
+    "questions": [
+      {"type": "MCQ", "title": "Which account signal suggests a relationship needs attention now?"},
+      {"type": "Written", "title": "How would you prepare for a renewal where value is not documented?"},
+      {"type": "Written", "title": "Describe a time you turned a difficult customer conversation into a stronger partnership."}
+    ],
+    "topics": [
+      {"title": "Account planning", "mins": 8, "prompt": "Tell me about creating a plan for a strategic account."},
+      {"title": "Negotiation", "mins": 7, "prompt": "Walk through a commercial tradeoff you handled well."},
+      {"title": "Trust", "mins": 7, "prompt": "How do you communicate when you cannot give the customer what they want?"}
     ]
   }
 ]

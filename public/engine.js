@@ -95,6 +95,33 @@ let otpResendAt = 0;
 let appSection = "meritedge";
 
 function findUser(email){ return state.users.find(u => u.email.toLowerCase() === String(email||"").toLowerCase()); }
+function ensureAccountEntitlements(u){
+  if(!u) return u;
+  if(typeof u.freeInviteCredits !== "number") u.freeInviteCredits = 5;
+  if(typeof u.freeInvitesUsed !== "number") u.freeInvitesUsed = 0;
+  if(!Array.isArray(u.reports)) u.reports = [];
+  return u;
+}
+function freeInviteBalance(u){
+  u = ensureAccountEntitlements(u || currentUser());
+  if(!u) return {total:5, used:0, left:5};
+  const total = Math.max(0, Number(u.freeInviteCredits) || 0);
+  const used = Math.max(0, Number(u.freeInvitesUsed) || 0);
+  return {total, used, left:Math.max(0, total-used)};
+}
+function consumeFreeInvites(count){
+  const u = ensureAccountEntitlements(currentUser());
+  if(!u || creditsRecharged(u)) return true;
+  const amount = Math.max(1, Number(count) || 1);
+  const balance = freeInviteBalance(u);
+  if(balance.left < amount){
+    toast(`You have ${balance.left} free invite${balance.left===1?"":"s"} left. Upgrade for more.`);
+    return false;
+  }
+  u.freeInvitesUsed = balance.used + amount;
+  saveState();
+  return true;
+}
 function domainOf(email){ return (email.split("@")[1]||"").toLowerCase(); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function initials(name){ return String(name||"U").split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase(); }
@@ -102,26 +129,9 @@ function toast(msg){ const el=document.getElementById("toast"); el.textContent=m
 let appPointerSelector = "";
 function hideAppClickPointer(){
   appPointerSelector = "";
-  document.getElementById("appClickPointer")?.classList.remove("on");
 }
-function positionAppClickPointer(){
-  if(!appPointerSelector) return;
-  const ptr = document.getElementById("appClickPointer");
-  const target = document.querySelector(appPointerSelector);
-  if(!ptr || !target) return;
-  const r = target.getBoundingClientRect();
-  ptr.style.left = Math.round(r.left + r.width * .72) + "px";
-  ptr.style.top = Math.round(r.top + r.height * .5) + "px";
-  ptr.classList.add("on");
-}
-function showAppClickPointer(selector, label){
-  if(!selector) return;
-  hideAppClickPointer();
-  appPointerSelector = selector;
-  const ptr = document.getElementById("appClickPointer");
-  if(ptr?.querySelector("span")) ptr.querySelector("span").textContent = label || "Click here";
-  requestAnimationFrame(positionAppClickPointer);
-}
+function positionAppClickPointer(){}
+function showAppClickPointer(){ appPointerSelector = ""; }
 
 const THEME_SUN = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
 const THEME_MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
@@ -525,6 +535,7 @@ function activateTrialAccount(){
   trialJourney.password = trialTempPassword(d.company);
   const user = {
     email, name: d.name, company: d.company, kind:"trial", plan:"trial", credits:25, daysLeft:3,
+    freeInviteCredits:5, freeInvitesUsed:0, reports:[],
     source:"book_trial", utm:"invite_gate", org: d.company+" Org", created:true, trialBooked:true, title:d.title, phone:d.phone
   };
   state.users = state.users.filter(u => u.email !== PREVIEW_EMAIL && u.email !== email);
@@ -717,7 +728,7 @@ function trialMailBody(id, embedded){
         <div class="tj-statbig"><span>Trial days left</span><b>${stats.days===0?"0":stats.days}</b><small>${stats.days===0?"Last day":stats.days===1?"1 day remaining":stats.days+" days remaining"}</small><span class="tj-days">${daysDots}</span></div>
       </div>
       <div class="tj-usage">
-        <div>Invites<b>Unlocked</b></div>
+        <div>Invites<b>5 free</b><small>candidate invites</small></div>
         <div>Window<b>1 day</b></div>
         <div class="tj-upgrow"><button class="tj-upg" type="button" onclick="upgradeFromTrialMail()">Upgrade</button></div>
       </div>
@@ -773,7 +784,7 @@ function trialEmailCards(){
       <div class="tj-efull-stats">
         <div><span>Credits used</span><b>${escapeHtml(c.used)}</b><small>${escapeHtml(c.left)}</small></div>
         <div><span>Days left</span><b>${escapeHtml(c.days)}</b><small>${escapeHtml(c.daysNote)}</small></div>
-        <div><span>Invites</span><b>Unlocked</b><small>1 day window</small></div>
+        <div><span>Invites</span><b>5 free</b><small>candidate invites</small></div>
       </div>
     </article>`).join("")}</div>`;
 }
@@ -789,12 +800,14 @@ function sendInviteFromEmails(){
   if(kind==="assessment"){
     const a = assessments.find(x=>x.id===id);
     if(!a){ toast("Assessment not found."); return; }
+    if(!consumeFreeInvites(1)) return;
     firstCand = {id:"n"+Date.now(), name:nameFromInviteEmail(email), email, score:"—", status:"Invited", skills:"Invite sent", selfInvite:true};
     a.candidates.push(firstCand);
     a.invited = (a.invited||0)+1;
   } else {
     const iv = interviews.find(x=>x.id===id);
     if(!iv){ toast("Interview not found."); return; }
+    if(!consumeFreeInvites(1)) return;
     firstCand = {id:"n"+Date.now(), name:nameFromInviteEmail(email), email, score:"—", rec:"Invited", status:"Invited", note:"Waiting for the candidate to start.", selfInvite:true};
     iv.candidates.push(firstCand);
     iv.invited = (iv.invited||0)+1;
@@ -818,12 +831,14 @@ function sendPublishedInvite(kind, id){
   if(kind==="assessment"){
     const a = assessments.find(x=>x.id===id);
     if(!a){ toast("Assessment not found."); return; }
+    if(!consumeFreeInvites(1)) return;
     firstCand = {id:"n"+Date.now(), name:nameFromInviteEmail(email), email, score:"—", status:"Invited", skills:"Invite sent", selfInvite:true};
     a.candidates.push(firstCand);
     a.invited = (a.invited||0)+1;
   } else {
     const iv = interviews.find(x=>x.id===id);
     if(!iv){ toast("Interview not found."); return; }
+    if(!consumeFreeInvites(1)) return;
     firstCand = {id:"n"+Date.now(), name:nameFromInviteEmail(email), email, score:"—", rec:"Invited", status:"Invited", note:"Waiting for the candidate to start.", selfInvite:true};
     iv.candidates.push(firstCand);
     iv.invited = (iv.invited||0)+1;
@@ -1017,7 +1032,8 @@ function finishBillJourneyToApp(){
   renderWorkspace();
 }
 function openCreditsNav(){
-  appNav(creditsRecharged() ? "billing" : "plans");
+  if(creditsRecharged()) appNav("billing");
+  else openUpgradePlans();
 }
 function openAppBillingJourney(screen){
   if(screen==="receipt-email" || screen==="plan-email" || screen==="renewal-email" || screen==="recovery"){
@@ -1247,7 +1263,7 @@ function showSignupStep(n){
       ${invite ? "" : `<label class="field"><span>Role <em class="opt">(optional)</em></span><input id="signupRole" placeholder="e.g. Head of Talent" autocomplete="organization-title" value="${escapeHtml(signupData.title||"")}"></label>`}
       <label class="field"><span>Company</span><input id="companyName" placeholder="Filled from your work email" autocomplete="organization" value="${escapeHtml(signupData.company||"")}"></label>
       ${invite ? "" : `<label class="field"><span>Referral code <em class="opt">(optional)</em></span><input id="referralCode" placeholder="e.g. TEAM20" autocomplete="off" value="${escapeHtml(signupData.referral||"")}"></label>`}
-      <div class="demo-note" id="signupNote">${invite ? "No credit card. After you sign up, send the invite to yourself and try the candidate experience." : "14-day trial · 25 starter credits · no credit card."}</div>
+      <div class="demo-note" id="signupNote">${invite ? "No credit card. Sign up to unlock 5 free invites and save every candidate report to your account." : "5 free invites · reports saved to your account · no credit card."}</div>
       <button class="su-cta" type="button" onclick="requestDemoCode()">${invite ? "Sign up" : "Create account"}</button>`;
   } else if(n===2){
     setProgress(2);
@@ -1452,6 +1468,30 @@ function goExistingLogin(){
   err.classList.add("on");
 }
 
+function openPendingInviteEmailAfterSignup(){
+  const pending = pendingInvite;
+  if(!pending) return false;
+  pendingInvite = null;
+  const {kind, id} = pending;
+  const item = inviteItem(kind, id);
+  const u = currentUser();
+  if(!item || !u) return false;
+  if(!consumeFreeInvites(1)) return false;
+  const firstCand = kind === "assessment"
+    ? {id:"n"+Date.now(), name:u.name||"You", email:u.email, score:"â€”", status:"Invited", skills:"Invite sent", selfInvite:true}
+    : {id:"n"+Date.now(), name:u.name||"You", email:u.email, score:"â€”", rec:"Invited", status:"Invited", note:"Waiting for the candidate to start.", selfInvite:true};
+  item.candidates = item.candidates || [];
+  item.candidates.push(firstCand);
+  item.invited = (item.invited||0) + 1;
+  wizard = null;
+  appSection = kind === "interview" ? "ai-interviewer" : "meritedge";
+  appDetail = null;
+  showView("workspace");
+  toast(`${kind === "interview" ? "AI interview" : "Assessment"} email ready. Start it when you are ready.`);
+  openInviteMail(kind, id, firstCand.id);
+  return true;
+}
+
 function enterNewWorkspace(){
   signupVerifyGen += 1;
   const bonus = signupData.referral ? 5 : 0;
@@ -1467,6 +1507,9 @@ function enterNewWorkspace(){
     kind: "trial",
     plan: "trial",
     credits: 25 + bonus,
+    freeInviteCredits: 5,
+    freeInvitesUsed: 0,
+    reports: [],
     daysLeft: 3,
     source: "pilot",
     utm: pendingInvite ? "invite_register" : "landing",
@@ -1491,6 +1534,7 @@ function enterNewWorkspace(){
   wizard = null;
   checkout = null;
   showView("workspace");
+  if(openPendingInviteEmailAfterSignup()) return;
   openSignupEmailTemplates();
 }
 
@@ -1540,7 +1584,7 @@ function startLoginSlides(){
     setLoginSlide((loginSlide+1)%LOGIN_SLIDES.length);
   }, 6000);
 }
-function signOut(){ stopTourVoice(); clearTourAdvance(); closeTourIntro(); closeDemoReel(); closeTrialJourney(); closeBillJourney(); closeReferShare(); closeSso(); closeWow(); tour=null; document.body.classList.remove("tour-lock"); document.getElementById("tourOverlay")?.classList.remove("open"); state.session=null; saveState(); showView("login"); }
+function signOut(){ stopTourVoice(); clearTourAdvance(); closeTourIntro(); closeDemoReel(); closeTrialJourney(); closeBillJourney(); closeReferShare(); closeSso(); closeWow(); tour=null; document.body.classList.remove("tour-lock"); document.getElementById("tourOverlay")?.classList.remove("open"); state.session=null; saveState(); showView("landing"); }
 
 const G_ICO = `<svg class="sso-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`;
 const MS_ICO = `<svg class="sso-ico" viewBox="0 0 21 21" aria-hidden="true"><rect width="10" height="10" fill="#F25022"/><rect x="11" width="10" height="10" fill="#7FBA00"/><rect y="11" width="10" height="10" fill="#00A4EF"/><rect x="11" y="11" width="10" height="10" fill="#FFB900"/></svg>`;
@@ -1600,6 +1644,9 @@ function finishSsoLogin(){
       kind: "trial",
       plan: "trial",
       credits: 25,
+      freeInviteCredits: 5,
+      freeInvitesUsed: 0,
+      reports: [],
       daysLeft: 14,
       source: "sso",
       utm: provider,
@@ -1829,8 +1876,17 @@ function openUpgradePlans(){
   appSection = "plans";
   appDetail = null;
   wizard = null;
+  showView("plans");
+}
+function backToCreateAssessment(){
+  closeCandExam();
+  closeInviteMail();
+  inviteMail = null;
+  appSection = "meritedge";
+  appDetail = null;
+  wizard = null;
   showView("workspace");
-  renderWorkspace();
+  startCreateAssessment({focused:true});
 }
 function resumePendingCreate(){
   const kind = pendingCreate;
@@ -2712,7 +2768,23 @@ function openTourIntro(){
   }
 }
 function skipTourIntro(){
-  startDemoReel();
+  closeTourIntro();
+  stopTourVoice();
+  clearTourAdvance();
+  if(demoReel) closeDemoReel();
+  tour = null;
+  document.body.classList.remove("tour-lock");
+  document.getElementById("tourOverlay")?.classList.remove("open");
+  if(currentUser()?.kind === "preview"){
+    appSection = "meritedge";
+    appDetail = null;
+    wizard = null;
+    showView("workspace");
+    startCreateAssessment({focused:true});
+    toast("Tour skipped. Create your assessment to get started.");
+    return;
+  }
+  showView("workspace");
 }
 const DEMO_DURATION = __D.demoDuration;
 const DEMO_SCENES = __D.demoScenes;
@@ -2863,17 +2935,6 @@ function hideDemoPointer(){
 }
 function aimDemoPointer(sel){
   hideDemoPointer();
-  if(!sel || isCinemaScene(DEMO_SCENES[demoReel?.i])) return;
-  demoPointerTimer = setTimeout(()=>{
-    const ptr = document.getElementById("dvPointer");
-    const el = document.querySelector(sel);
-    if(!ptr || !el || !demoReel || demoReel.ended) return;
-    const r = el.getBoundingClientRect();
-    ptr.style.left = Math.round(r.left + r.width*0.72)+"px";
-    ptr.style.top = Math.round(r.top + r.height*0.55)+"px";
-    ptr.classList.add("on");
-    demoPointerTimer = setTimeout(()=>ptr.classList.add("click"), 780);
-  }, 420);
 }
 function setDemoFrameClass(scene){
   document.body.classList.remove("demo-frame-tilt-left","demo-frame-tilt-right","demo-frame-rise","demo-frame-ken","demo-frame-flat");
@@ -2903,7 +2964,6 @@ function paintDemoReel(full){
         <div class="dv-cinema ${isCinemaScene(scene)?"on":""}" id="dvCinema">${isCinemaScene(scene)?cinemaHtml(scene):""}</div>
         <div class="dv-fx" id="dvFx">${demoFloatHtml(scene)}</div>
       </div>
-      <div class="dv-pointer" id="dvPointer"><i></i></div>
       <div class="dv-caption" id="dvCaptionBox">
         <span class="dv-pill" id="dvPill">${ended?"That's the product. Try it, or watch again.":escapeHtml(scene.caption||demoLine(scene))}</span>
         <p class="dv-benefit" id="dvBenefit">${ended?"":escapeHtml(scene.benefit||"")}</p>
@@ -3548,7 +3608,42 @@ function drawTourCard(){
     </div>`;
 }
 
-function currentUser(){ return findUser(state.session); }
+function currentUser(){ return ensureAccountEntitlements(findUser(state.session)); }
+function hydrateAccountReports(){
+  const u = currentUser();
+  if(!u?.reports?.length) return;
+  u.reports.forEach(saved=>{
+    const item = inviteItem(saved.kind, saved.itemId);
+    if(!item) return;
+    item.candidates = item.candidates || [];
+    let cand = item.candidates.find(c=>c.id===saved.candidateId || (saved.candidateEmail && c.email===saved.candidateEmail));
+    if(!cand){
+      cand = {id:saved.candidateId, name:saved.candidateName||"Candidate", email:saved.candidateEmail||u.email, selfInvite:true};
+      item.candidates.push(cand);
+      item.invited = Math.max(item.invited||0, item.candidates.length);
+    }
+    const wasCompleted = cand.status === "Completed";
+    Object.assign(cand, {name:saved.candidateName||cand.name, email:saved.candidateEmail||cand.email, score:saved.score, status:"Completed", report:saved.data});
+    if(!wasCompleted) item.completed = (item.completed||0) + 1;
+  });
+}
+function openAccountReport(reportId){
+  const u = currentUser();
+  const saved = u?.reports?.find(r=>r.id===reportId);
+  if(!saved) return;
+  hydrateAccountReports();
+  openCandidateReport(saved.kind, saved.itemId, saved.candidateId);
+}
+function accountReportsHtml(u, compact=false){
+  if(!u || isPreviewUser(u)) return "";
+  const balance = freeInviteBalance(u);
+  const reports = u?.reports || [];
+  const reportRows = reports.length
+    ? reports.slice(0,5).map(r=>`<div class="te-account-report-row"><span class="te-account-report-icon">${r.kind==="interview"?"AI":"M"}</span><span><b>${escapeHtml(r.title)}</b><small>${escapeHtml(r.candidateName||"Candidate")} · ${escapeHtml(r.completedAt||"Completed")}</small></span><strong>${escapeHtml(String(r.score==null?"—":r.score))}${typeof r.score==="number"?"%":""}</strong><button class="te-btn ghost" type="button" onclick="openAccountReport('${escapeHtml(r.id)}')">View report</button></div>`).join("")
+    : `<p class="te-note" style="margin:0">Complete an invite and the report will be saved here automatically.</p>`;
+  if(compact) return `<section class="te-account-card focused-account-card"><div class="te-account-card-head"><div><label>Saved reports</label><h2>${reports.length ? `${reports.length} report${reports.length===1?"":"s"} from your free invites` : "No saved reports yet"}</h2></div><button class="te-btn ghost" type="button" onclick="openUpgradePlans()">Upgrade to paid plan</button></div><div class="te-account-reports">${reportRows}</div></section>`;
+  return `<section class="te-account-card"><div class="te-account-card-head"><div><label>Your free workspace</label><h2>${balance.left} free invite${balance.left===1?"":"s"} remaining</h2><p>Every completed invite creates a report saved to ${escapeHtml(u?.email||"your account")}.</p></div><button class="te-btn ghost" type="button" onclick="openUpgradePlans()">Upgrade to paid plan</button></div><div class="te-account-stats"><span><b>${balance.left}</b> invites left</span><span><b>${reports.length}</b> reports saved</span><span><b>5</b> free invites included</span></div><div class="te-account-reports">${reportRows}</div><p class="te-note" style="margin:12px 0 0">Upgrade to unlock the full platform experience, including unlimited workspace access and advanced insights.</p></section>`;
+}
 function appNav(section){
   if(tour) return;
   openKebab = null;
@@ -3619,11 +3714,11 @@ function jdPickerHtml(selectedId, parsing){
       <small>PDF, DOC, DOCX, TXT · preview only, the file is not stored</small>
     </div>
     <div class="jd-group" data-tour="jd">
-      <h4>Tech · 3 defaults</h4>
+      <h4>Tech · ${tech.length} defaults</h4>
       <div class="jd-grid five">${tech.map(j=>jdCardHtml(j, selectedId)).join("")}</div>
     </div>
     <div class="jd-group">
-      <h4>Non-tech · 3 defaults</h4>
+      <h4>Non-tech · ${nontech.length} defaults</h4>
       <div class="jd-grid five">${nontech.map(j=>jdCardHtml(j, selectedId)).join("")}</div>
     </div>
     ${parsing?`<div class="jd-parse"><em></em> AI is reading the job description…</div>`:""}
@@ -3992,7 +4087,7 @@ function wizNext(){
   if(wizard.step < steps.length-1) wizard.step += 1;
   renderWorkspace();
 }
-function publishAssessment(){
+function publishAssessment(options){
   captureWizard();
   const d = wizard.data;
   if(!d.name){ toast("Give the assessment a name."); renderWorkspace(); return; }
@@ -4013,6 +4108,10 @@ function publishAssessment(){
   if(publishInviteCountdownTimer) clearInterval(publishInviteCountdownTimer);
   publishInviteSeconds = 5;
   renderWorkspace();
+  if(options?.openInvite){
+    openPostPublishInvite("assessment", id);
+    return;
+  }
   publishInviteCountdownTimer = setInterval(()=>{
     if(appDetail?.type!=="wizard" || wizard?.publishedId!==id || wizard.step!=="done"){
       clearInterval(publishInviteCountdownTimer);
@@ -4384,6 +4483,7 @@ function sendInvites(){
   if(kind==="assessment"){
     const a = assessments.find(x=>x.id===id);
     if(!a){ toast("Assessment not found."); return; }
+    if(!consumeFreeInvites(emails.length)) return;
     emails.forEach((email,i)=>{
       const cand = {id:"n"+Date.now()+i, name:nameFromInviteEmail(email), email, score:"—", status:"Invited", skills:"Invite sent", selfInvite:true};
       a.candidates.push(cand);
@@ -4393,6 +4493,7 @@ function sendInvites(){
   } else {
     const iv = interviews.find(x=>x.id===id);
     if(!iv){ toast("Interview not found."); return; }
+    if(!consumeFreeInvites(emails.length)) return;
     emails.forEach((email,i)=>{
       const cand = {id:"n"+Date.now()+i, name:nameFromInviteEmail(email), email, score:"—", rec:"Invited", status:"Invited", note:"Waiting for the candidate to start.", selfInvite:true};
       iv.candidates.push(cand);
@@ -4531,6 +4632,28 @@ function finishSelfInviteAttempt(){
     }
     cand.report = cand.report || buildInterviewReport(item, cand);
   }
+  if(cand.selfInvite) saveAccountReport(kind, id, candId, item, cand);
+}
+function saveAccountReport(kind, itemId, candidateId, item, cand){
+  const u = ensureAccountEntitlements(currentUser());
+  if(!u) return;
+  const key = `${kind}:${itemId}:${candidateId}`;
+  const report = {
+    id:key,
+    kind,
+    itemId,
+    candidateId,
+    title:item.title || item.role || "Candidate report",
+    candidateName:cand.name || "Candidate",
+    candidateEmail:cand.email || "",
+    score:cand.score,
+    completedAt:todayLabel(),
+    data:cand.report
+  };
+  const index = u.reports.findIndex(x=>x.id===key);
+  if(index>=0) u.reports[index] = report;
+  else u.reports.unshift(report);
+  saveState();
 }
 function startInvitedAttempt(){
   if(!inviteMail) return;
@@ -4549,13 +4672,12 @@ function openCandExam(){
   clearTimeout(candExam?._t);
   clearTimeout(candExam?._auto);
   const lite = freeCandidate();
-  candExam = {step:"verify", checks:Array(lite?3:5).fill(0), pick:{}, agree:false, photo:false, qn:0, tab:false, lite, auto:lite, _auto:null};
+  candExam = {step:"details", checks:Array(lite?3:5).fill(0), pick:{}, agree:false, photo:false, qn:0, tab:false, lite, auto:lite, _auto:null};
   const el = document.getElementById("candExamOverlay");
   if(!el) return;
   el.classList.add("open");
   document.body.style.overflow = "hidden";
   drawCandExam();
-  candExam._t = setTimeout(()=>{ if(candExam?.step==="verify") cxGo("check"); }, AUTO_PAGE_WAIT);
 }
 function closeCandExam(){
   hideAppClickPointer();
@@ -4568,6 +4690,11 @@ function closeCandExam(){
   document.getElementById("candExamOverlay")?.classList.remove("open");
   document.body.style.overflow = "";
 }
+function openCandidateUpgrade(){
+  closeCandExam();
+  closeInviteMail();
+  openUpgradePlans();
+}
 function cxCtx(){
   if(!inviteMail) return {};
   const item = inviteItem(inviteMail.kind, inviteMail.id);
@@ -4576,6 +4703,10 @@ function cxCtx(){
 }
 function cxGo(step){
   if(!candExam) return;
+  if(step==="sec2"){
+    cxFinishExam();
+    return;
+  }
   candExam.step = step;
   if(step==="check"){
     candExam.checks = Array(candExam.lite?3:5).fill(0);
@@ -4604,10 +4735,6 @@ function cxAutoAnswer(step){
       if(!candExam || candExam.step!==step) return;
       if(step==="q3"){
         cxFinishExam();
-        showAppClickPointer(".isucc .te-btn", "View report");
-        candExam._auto = setTimeout(()=>{
-          if(candExam?.step==="done") openInvitedReport();
-        }, AUTO_PAGE_WAIT);
       } else {
         cxNextQ();
       }
@@ -4646,7 +4773,7 @@ function cxNextQ(){
 function cxFinishExam(){
   hideAppClickPointer();
   finishSelfInviteAttempt();
-  cxGo("done");
+  cxGo("report");
 }
 function drawCandExam(){
   const el = document.getElementById("candExamOverlay");
@@ -4711,7 +4838,7 @@ function drawCandExam(){
   if(step==="details"){
     el.innerHTML = `<div class="cx-stage grid"><div class="cx-details">
       <div class="cx-side">
-        <img src="assets/otomeyt-ai-logo-light.svg" alt="" style="height:22px">
+        <div class="cx-candidate-brand"><span>Candidate assessment</span></div>
         ${lite?`<span class="cx-sample">Free plan sample</span>`:""}
         <h3 style="margin:14px 0 8px">${escapeHtml(item.title)}</h3>
         <div class="cx-kpis"><div><b>1</b><span>SECTIONS</span></div><div><b>${qn}</b><span>QUESTIONS</span></div><div><b>${mins}</b><span>MINUTES</span></div></div>
@@ -4728,7 +4855,7 @@ function drawCandExam(){
         <p class="hint">Locked from your invite.</p>
         <label>Phone</label><input placeholder="Optional">
         <label style="display:flex;gap:8px;align-items:flex-start;margin-top:14px;color:#d1d5db"><input type="checkbox" ${candExam.agree?"checked":""} onclick="cxAgree()" style="width:auto;height:auto;margin-top:3px"> I have read and agree to the Terms &amp; Conditions and consent to data collection as described.</label>
-        <button class="cx-cta" type="button" ${candExam.agree?"":"disabled"} onclick="cxGo('${lite?"sec1":"photo"}')">${lite?"Begin sample →":"Continue to Photo →"}</button>
+        <button class="cx-cta" type="button" ${candExam.agree?"":"disabled"} onclick="cxGo('${lite?"q1":"photo"}')">${lite?"Begin assessment →":"Continue to Photo →"}</button>
       </div>
     </div></div>`;
     return;
@@ -4745,9 +4872,10 @@ function drawCandExam(){
   if(step==="sec1"){
     el.innerHTML = `<div class="bsec">
       <div class="bsec-card">
-        <div class="bsec-brand">
-          <img src="assets/otomeyt-ai-logo-light.svg" alt="">
-          <b>${escapeHtml(company)}</b>
+        <div class="bsec-brand candidate-workspace-brand">
+          <span class="candidate-workspace-mark">✓</span>
+          <b>Candidate workspace</b>
+          <span>Secure session</span>
         </div>
         <p class="bsec-name">${escapeHtml(item.title||"Assessment")}</p>
         <div class="bsec-ico">📝</div>
@@ -4785,12 +4913,12 @@ function drawCandExam(){
       return `<button type="button" class="qnav-n ${cls}" ${go}>${i+1}</button>`;
     }).join("");
     const opts = q.opts.map(o=>`<button class="qopt ${sel===o.k?"on":""}" data-cx-option="${o.k}" type="button" role="radio" onclick="cxPick('${o.k}')"><b>${o.k}</b><span>${escapeHtml(o.t)}</span><em>${o.k}</em></button>`).join("");
-    const last = qi===2 && lite;
+    const last = qi===2;
     el.innerHTML = `<div class="qtest">
       <header class="qtest-head">
         <div class="qtest-bar">
           <div class="qtest-brand">
-            <img src="assets/otomeyt-ai-logo-light.svg" alt="">
+            <span class="qtest-brand-name">Candidate assessment</span>
             <span>Q <b>${qi+1}</b> <i>/</i> ${totalQ}</span>
           </div>
           <div class="qtest-status">
@@ -4823,7 +4951,7 @@ function drawCandExam(){
           ${last?"":`<button type="button" onclick="cxNextQ()">Skip</button>`}
           <div class="qtest-qtime"><b>00:${String(40-qi*8).padStart(2,"0")}</b></div>
         </div>
-        <button class="qtest-next" type="button" onclick="${last?"openInvitedReport()":"cxNextQ()"}">${last?"Submit assessment":"Skip & Next →"}</button>
+        <button class="qtest-next" type="button" onclick="${last?"cxFinishExam()":"cxNextQ()"}">${last?"Submit assessment":"Skip & Next →"}</button>
       </footer>
     </div>`;
     const nextButton = el.querySelector(".qtest-next");
@@ -4890,6 +5018,27 @@ def query_singers(singers: list[dict], query: str, current_year: int = 2021) -> 
         <button class="te-btn" type="button" onclick="cxFinishExam()">Submit & Continue →</button>
       </div>
     </div></div></div>`;
+    return;
+  }
+  if(step==="report"){
+    const r = cand.report || {};
+    const score = typeof r.score === "number" ? r.score : 78;
+    const skills = (r.skills||[]).slice(0,3).map(s=>`<article class="cx-report-skill"><div><b>${escapeHtml(s.name||"Skill")}</b><span>${escapeHtml(String(s.pct||0))}%</span></div><i><em style="width:${Math.max(0,Math.min(100,Number(s.pct)||0))}%"></em></i></article>`).join("");
+    const passLabel = score >= 70 ? "Above passing" : "Preview score";
+    el.innerHTML = `<div class="cx-report-page">
+      <header class="cx-report-top"><button class="cx-report-back" type="button" onclick="backToCreateAssessment()">← Back to create assessment</button><div class="cx-report-brand"><span class="cx-report-brand-mark">✓</span><div><b>Candidate report</b><small>Private assessment preview</small></div></div><div class="cx-report-top-meta"><span>Logged in as ${escapeHtml(email)}</span><b>5 free invite credits included</b></div></header>
+      <main class="cx-report-main">
+        <div class="cx-report-crumb">Assessment result <span>·</span> ${escapeHtml(item.title||"Assessment")}</div>
+        <section class="cx-report-hero">
+          <div class="cx-report-person"><div class="cx-report-avatar">${escapeHtml(initials(name))}</div><div><span class="cx-report-label">Candidate</span><h1>${escapeHtml(name)}</h1><p>${escapeHtml(email)}</p><strong>${escapeHtml(item.title||"Assessment")}</strong><small>${escapeHtml(r.time||"8m")} · ${escapeHtml(String(r.questions||3))} questions answered</small></div></div>
+          <div class="cx-report-ring"><b>${score}%</b><span>Raw knowledge</span></div>
+          <div class="cx-report-summary"><b>${passLabel} (${score}%)</b><span>AI Analysis: Preview</span><p>${escapeHtml(name)} completed the assessment preview. Unlock the detailed evidence and full hiring report when you upgrade.</p></div>
+        </section>
+        <section class="cx-report-info"><h2>Candidate information</h2><p>Details submitted during registration</p><div><article><span>FULL NAME</span><b>${escapeHtml(name)}</b></article><article><span>EMAIL</span><b>${escapeHtml(email)}</b></article><article><span>INVITES</span><b>5 free invites</b></article></div></section>
+        <section class="cx-report-preview"><div class="cx-report-section-head"><div><span class="cx-report-section-icon">✓</span><div><h2>Preview report</h2><p>Early signal from your completed assessment</p></div></div><span class="cx-report-preview-pill">FREE PREVIEW</span></div><div class="cx-report-skill-grid">${skills}</div></section>
+        <section class="cx-report-lock"><div class="cx-report-lock-icon">🔒</div><div><span>FULL REPORT LOCKED</span><h2>Upgrade to view the full report</h2><p>Unlock section insights, detailed skill breakdown, question evidence, and proctoring details.</p><small>Your free plan includes 5 invites. Upgrade when you are ready to use the full MeritEdge workspace.</small></div><button type="button" onclick="openCandidateUpgrade()">Upgrade plans <span>→</span></button></section>
+      </main>
+    </div>`;
     return;
   }
   const r = cand.report || {};
@@ -5209,9 +5358,19 @@ function drawIvSession(){
 function openInvitedReport(){
   finishSelfInviteAttempt();
   closeInviteMail();
-  closeCandExam();
   if(!inviteMail) return;
-  openCandidateReport(inviteMail.kind, inviteMail.id, inviteMail.candId);
+  const reportInvite = Object.assign({}, inviteMail);
+  closeCandExam();
+  inviteMail = reportInvite;
+  const item = inviteItem(reportInvite.kind, reportInvite.id);
+  const cand = inviteCandidate(reportInvite.kind, reportInvite.id, reportInvite.candId);
+  if(!item || !cand) return;
+  candExam = {step:"report", pick:{}, lite:freeCandidate(), auto:false, _auto:null};
+  const el = document.getElementById("candExamOverlay");
+  if(!el) return;
+  el.classList.add("open");
+  document.body.style.overflow = "hidden";
+  drawCandExam();
 }
 function buildAssessReport(a, cand){
   const lite = candAttemptLite();
@@ -6086,8 +6245,7 @@ function focusedSelectJd(id){
   applyJdToData(wizard.data, jd, null, false);
   wizard.data.focusedCustomText = "";
   wizard.data.focusedAutoStart = false;
-  renderWorkspace();
-  scheduleFocusedAssessmentGeneration();
+  focusedCreateAssessment();
 }
 function scheduleFocusedAssessmentGeneration(){
   if(!wizard?.data?.focusedCreate || wizard.data.aiPhase!=="focused") return;
@@ -6112,8 +6270,7 @@ function onFocusedJdFile(ev){
   applyJdToData(wizard.data, hit, f.name, false);
   wizard.data.focusedCustomText = "";
   wizard.data.focusedAutoStart = false;
-  renderWorkspace();
-  scheduleFocusedAssessmentGeneration();
+  focusedCreateAssessment();
 }
 function focusedCreateAssessment(){
   if(!wizard?.data?.focusedCreate) return;
@@ -6165,14 +6322,15 @@ function generateAiAssessment(){
   wizard.data.aiPhase = "creating";
   wizard.data.aiCreateAt = 0;
   wizard.data.aiPct = 12;
-  wizard.data.aiCreateDeadline = Date.now() + 5000;
+  wizard.data.aiCreateStartedAt = Date.now();
+  wizard.data.aiCreateDeadline = Date.now() + 10000;
   renderWorkspace();
   const tick = i => {
     if(gen!==aiCreateGen || !wizard) return;
     wizard.data.aiCreateAt = i;
     wizard.data.aiPct = Math.min(100, [12,38,62,88,100][i]||100);
     renderWorkspace();
-    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 900);
+    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 1900);
     else aiCreateTimer = setTimeout(()=>{
       if(gen!==aiCreateGen || !wizard) return;
       const jd = jdById(wizard.data.jdId) || jdByRole(intentRole());
@@ -6213,14 +6371,15 @@ function generateAiInterview(){
   wizard.data.aiPhase = "creating";
   wizard.data.aiCreateAt = 0;
   wizard.data.aiPct = 12;
-  wizard.data.aiCreateDeadline = Date.now() + 5000;
+  wizard.data.aiCreateStartedAt = Date.now();
+  wizard.data.aiCreateDeadline = Date.now() + 10000;
   renderWorkspace();
   const tick = i => {
     if(gen!==aiCreateGen || !wizard) return;
     wizard.data.aiCreateAt = i;
     wizard.data.aiPct = Math.min(100, [12,38,62,88,100][i]||100);
     renderWorkspace();
-    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 900);
+    if(i<4) aiCreateTimer = setTimeout(()=>tick(i+1), 1900);
     else aiCreateTimer = setTimeout(()=>{
       if(gen!==aiCreateGen || !wizard) return;
       const jd = jdById(wizard.data.jdId) || jdByRole(wizard.data.role || intentRole());
@@ -6298,10 +6457,20 @@ function creatingScreenHtml(title, steps, lines){
   const pct = d.aiPct||12;
   const secs = d.aiCreateDeadline ? Math.max(0, Math.ceil((d.aiCreateDeadline-Date.now())/1000)) : Math.min(59, at * 2 + 1);
   const creatingPreview = !!d.focusedCreate;
+  const subject = title.includes("Interview") ? "interview" : "assessment";
+  const slowSecs = Math.max(0, 7200 - Math.floor((Date.now() - (d.aiCreateStartedAt || Date.now())) / 1000));
+  const slowTimer = [Math.floor(slowSecs / 3600), Math.floor((slowSecs % 3600) / 60), slowSecs % 60].map(n => String(n).padStart(2,"0")).join(":");
+  const elapsedSeconds = d.aiCreateStartedAt ? Math.max(0, Math.floor((Date.now() - d.aiCreateStartedAt) / 1000)) : 0;
+  const savedMinutes = Math.max(0, Math.floor((7200 - elapsedSeconds) / 60));
+  const savedTime = `${Math.floor(savedMinutes / 60)}h ${String(savedMinutes % 60).padStart(2,"0")}m`;
+  const outputItems = title.includes("Interview")
+    ? ["3 topics mapped", "5 probes drafted", "Evaluation rubric ready"]
+    : ["18 skills extracted", "5 questions calibrated", "Quality check passed"];
+  const outputChips = outputItems.map((item,i)=>`<span class="${i<at?"done":i===at?"active":""}">${i<at?"OK":i===at?"LIVE":"WAIT"} ${item}</span>`).join("");
   const rows = steps.map((s,i)=>{
     return `<div class="cya-step ${i<at?"ok":i===at?"on":""}">
       <i>${i<at?"✓":i===at?"✦":""}</i>
-      <div><b>${s.label}</b>${i===at?`<small>${s.sub}</small>`:""}</div>
+      <div><b>${s.label}</b>${i<at?`<small class="cya-step-result">${outputItems[i]||"Complete"}</small>`:i===at?`<small>${s.sub}</small>`:""}</div>
     </div>`;
   }).join("");
   return `<div class="cya" data-tour="wizard">
@@ -6313,6 +6482,27 @@ function creatingScreenHtml(title, steps, lines){
       </div>
       <h1><span>✦</span> ${escapeHtml(title)} <span>✦</span></h1>
       <p class="cya-sub">${lines[Math.min(at, lines.length-1)]}</p>
+      <div class="cya-compare" aria-label="Generation speed comparison">
+        <article class="cya-compare-card slow">
+          <div class="cya-compare-top"><span class="cya-compare-label">Other platforms</span><span class="cya-compare-icon">2h</span></div>
+          <strong class="cya-compare-time">${slowTimer}</strong>
+          <p>Manual setup, question review, and configuration</p>
+          <div class="cya-slow-track"><i></i></div>
+          <small>Still preparing...</small>
+        </article>
+        <div class="cya-compare-vs">VS</div>
+        <article class="cya-compare-card fast">
+          <div class="cya-compare-top"><span class="cya-compare-label">MeritEdge</span><span class="cya-compare-icon">10s</span></div>
+          <strong class="cya-compare-time">00:${String(Math.min(10, secs)).padStart(2,"0")}</strong>
+          <p>JD to skills to questions to ready ${subject}</p>
+          <div class="cya-fast-track"><i style="width:${pct}%"></i></div>
+          <small>Ready in seconds</small>
+        </article>
+      </div>
+      <div class="cya-build-strip" aria-live="polite">
+        <div class="cya-build-head"><span>LIVE BUILD</span><b>${savedTime} saved</b></div>
+        <div class="cya-build-chips">${outputChips}</div>
+      </div>
       <p class="cya-countdown">${creatingPreview?"Preparing your preview":"Auto-publishing"} in ${secs} seconds</p>
       <div class="cya-track"><i style="width:${pct}%"></i></div>
       <div class="cya-pct">${pct}%</div>
@@ -6327,29 +6517,40 @@ function creatingScreenHtml(title, steps, lines){
 function focusedCreateHtml(){
   const d = wizard.data;
   const filter = d.focusedFilter || "all";
-  const items = SAMPLE_JDS.filter(j => filter==="all" || j.kind===filter);
+  const items = SAMPLE_JDS.filter(j => filter==="all" ? j.top : j.kind===filter);
+  const roleFilters = [
+    ["all", `Top roles from All domains (${SAMPLE_JDS.filter(j=>j.top).length})`],
+    ["tech", `Tech (${SAMPLE_JDS.filter(j=>j.kind==="tech").length})`],
+    ["nontech", `Non-tech (${SAMPLE_JDS.filter(j=>j.kind!=="tech").length})`]
+  ];
   const selected = jdById(d.jdId);
   const custom = d.focusedCustomText || "";
+  const focusedUser = currentUser();
+  const reportsPanel = accountReportsHtml(focusedUser, true);
+  const focusedLogo = isPreviewUser(focusedUser) ? `<img src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI">` : "";
   const autoNote = d.focusedAutoStart
     ? "Selected. We’ll start creating your assessment in 5 seconds."
     : selected
       ? `Ready to create ${selected.role} with recommended defaults.`
       : "Choose a configured role or upload your own job description.";
   return `<div class="mew focused-create">
+    <div class="focused-brandbar ${focusedLogo?"has-logo":""}">
+      ${focusedLogo}
+      <button class="focused-demo" type="button" onclick="beginProductTour()"><span class="focused-demo-play">&#9654;</span><span><b>See how it works</b><small>Watch the interactive demo</small></span></button>
+    </div>
     <div class="focused-head">
       <div>
-        <span class="focused-kicker">MeritEdge · fast setup</span>
         <h1>Create your assessment</h1>
         <p>Pick a ready-to-use role setup or upload a job description. We’ll configure the questions, duration, scoring, and candidate settings for you.</p>
       </div>
-      <button class="focused-skip" type="button" onclick="appNav('meritedge')">Explore workspace later</button>
     </div>
+    ${reportsPanel}
     <div class="focused-body">
       <section class="focused-templates">
         <div class="focused-section-head">
           <div><span class="focused-kicker">Configured assessments</span><h2>Start with a role</h2><p>Everything is prefilled and ready to publish.</p></div>
           <div class="focused-filters">
-            ${[["all","All roles"],["tech","Tech"],["nontech","Non-tech"]].map(([id,label])=>`<button type="button" class="${filter===id?"on":""}" onclick="setFocusedFilter('${id}')">${label}</button>`).join("")}
+            ${roleFilters.map(([id,label])=>`<button type="button" class="${filter===id?"on":""}" onclick="setFocusedFilter('${id}')">${label}</button>`).join("")}
           </div>
         </div>
         <div class="focused-jd-grid">${items.map(j=>focusedJdCardHtml(j, d.jdId)).join("")}</div>
@@ -6392,7 +6593,7 @@ function focusedPreviewHtml(){
       <div class="focused-preview-copy"><span class="focused-kicker">Ready to publish</span><h2>${escapeHtml(d.name||"Assessment")}</h2><p>${escapeHtml(d.description||`A role-specific assessment for ${d.role||"your next hire"}.`)}</p><div class="focused-meta"><span>${qs.length} questions</span><span>${escapeHtml(String(d.duration||45))} min</span><span>${escapeHtml(d.role||"Configured role")}</span></div></div>
     </div>
     <div class="focused-skill-row">${skills.slice(0,6).map(s=>`<span>${escapeHtml(s)}</span>`).join("")}</div>
-    <div class="focused-review-actions"><button type="button" onclick="focusedTogglePanel('questions')">View questions <span>${qs.length}</span></button><button type="button" onclick="focusedTogglePanel('settings')">View settings</button><button class="focused-publish" type="button" onclick="publishAssessment()">Publish assessment <span>→</span></button></div>
+    <div class="focused-review-actions"><div class="focused-review-copy"><span>Ready to launch</span><small>Publish the assessment and invite yourself in one step.</small></div><div class="focused-review-tools"><button type="button" onclick="focusedTogglePanel('questions')">View questions <span>${qs.length}</span></button><button type="button" onclick="focusedTogglePanel('settings')">View settings</button><button class="focused-publish" type="button" onclick="publishAssessment({openInvite:true})">Publish assessment &amp; invite <span>→</span></button></div></div>
     ${panelHtml}
     <div class="focused-next"><span>Next step after publishing</span><b>Invite yourself to try the candidate experience</b><small>We’ll take you to the invite page after publishing.</small></div>
   </div>`;
@@ -6499,7 +6700,7 @@ function renderAssessWizard(){
       </article>`;
     }).join("");
     const redirectNotice = publishInviteSeconds > 0
-      ? `<div class="aha-live pub-redirect" role="status">Assessment published<span>Redirecting to Invite yourself in ${publishInviteSeconds} seconds...</span></div>`
+      ? `<div class="aha-live pub-redirect pub-success-banner" role="status"><i>OK</i><div><b>Assessment published</b><span>Redirecting to Invite yourself in ${publishInviteSeconds} seconds...</span></div><strong>${publishInviteSeconds}s</strong></div>`
       : "";
     return `<div class="mew me-published">
       ${redirectNotice}
@@ -7086,7 +7287,10 @@ function candidateRows(list, kind, id){
 function renderWorkspace(){
   const u = currentUser();
   if(!u){ showView("login"); return; }
+  hydrateAccountReports();
+  const focusedCreate = !!(appDetail?.type==="wizard" && wizard?.data?.focusedCreate);
   document.body.classList.toggle("me-wiz-on", !!(appDetail?.type==="wizard" && wizard));
+  document.body.classList.toggle("create-focus", focusedCreate);
   document.body.classList.toggle("preview-focus", !!(u.kind==="preview" && appDetail?.type==="wizard" && wizard?.data?.focusedCreate));
   syncPremiumSample();
   renderNav();
@@ -7096,7 +7300,9 @@ function renderWorkspace(){
   const showCredits = trialUnlocked(u);
   creditEl.hidden = !showCredits;
   if(showCredits){
-    creditEl.textContent = `${u.credits} credits · ${currentPlanId(u)}`;
+    creditEl.textContent = creditsRecharged(u)
+      ? `${u.credits} credits · ${currentPlanId(u)}`
+      : `${freeInviteBalance(u).left} free invite credits · Upgrade`;
     creditEl.classList.toggle("plus", !!(checkout?.applied && (checkout.step==="result"||checkout.step==="return")));
   } else {
     creditEl.textContent = "";
@@ -7405,7 +7611,7 @@ function renderWorkspace(){
             <span onclick="event.stopPropagation()">${kebab(a.id, assessActions(a))}</span>
           </div>`).join("")}${empty}
         </div>`;
-    content.innerHTML = `<div class="me-first">${moduleHeader({icon:icoBrain(), title:"MeritEdge Assessments", subtitle:"Cognitive & aptitude assessments", count:`${catalogAssessments().length} assessments`, createLabel:"Create Assessment", createFn:"startCreateAssessment()", tourSpot:"create"})}
+    content.innerHTML = `<div class="me-first">${accountReportsHtml(u)}${moduleHeader({icon:icoBrain(), title:"MeritEdge Assessments", subtitle:"Cognitive & aptitude assessments", count:`${catalogAssessments().length} assessments`, createLabel:"Create Assessment", createFn:"startCreateAssessment()", tourSpot:"create"})}
       ${moduleToolbar("assessment")}
       ${list}</div>`;
     return;
@@ -7440,7 +7646,7 @@ function renderWorkspace(){
           <button class="invite-mini" type="button" onclick="event.stopPropagation();startInvite('interview','${iv.id}')">Invite yourself</button>
           <span onclick="event.stopPropagation()">${kebab(iv.id, interviewActions(iv))}</span>
         </div>`).join("")}${empty}</div>`;
-    content.innerHTML = `${moduleHeader({icon:icoMsg(), title:"AI Interviewer", subtitle:"Real-time voice & chat interviews with AI-powered evaluation", count:`${catalogInterviews().length} interviews`, createLabel:"Create AI Interview", createFn:"startCreateInterview()", tourSpot:"create", spark:true, accent:"blue"})}
+    content.innerHTML = `${accountReportsHtml(u)}${moduleHeader({icon:icoMsg(), title:"AI Interviewer", subtitle:"Real-time voice & chat interviews with AI-powered evaluation", count:`${catalogInterviews().length} interviews`, createLabel:"Create AI Interview", createFn:"startCreateInterview()", tourSpot:"create", spark:true, accent:"blue"})}
       ${moduleToolbar("interview")}
       ${list}`;
     return;
@@ -7541,7 +7747,7 @@ Object.assign(window, {
   ivSpeakCurrent, ivToggle, ivUseName, ivVoiceAnswer, jumpDemoById, jumpDemoScene,
   launchBillRazorpay, leavePlansAfterPay, lockedFeature, mePickQ, meSetExp, meSetWindow,
   meToggle, milestoneGo, nextBillScreen, nextTrialPath, openAssessment, openCandidateFromDash,
-  openCreditsNav, openInfo, openInterview, openInvitedReport, openPaidSplit, openReferShare,
+  backToCreateAssessment, openAccountReport, openCreditsNav, openInfo, openInterview, openInvitedReport, openPaidSplit, openReferShare,
   openUpgradePlans, pasteSampleJd, pauseDemoReel, pauseTour, pickAssessBuild, pickListStatus,
   pickSsoAccount, pinPress, prevBillScreen, prevTrialPath, printGstInvoice, publishAssessment,
   publishInterview, replayProductTour, requestDemoCode, resetListDates, resumePendingCreate,

@@ -14,7 +14,7 @@
 
 <div id="view-plans" class="view">
 <div class="wrap">
-<header class="nav"><button class="brand" onclick="showView('landing')"><img id="publicPlansLogo" class="brand-logo" src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI"></button><nav class="navlinks"><button class="ghost" style="border:0;padding:0;font:inherit;color:inherit" onclick="showView('landing')">Product</button><button class="ghost" onclick="showView('login')">Log in</button><button class="navcta" onclick="startFlow()">Start free <span>↗</span></button></nav></header>
+<header class="nav"><button class="brand" onclick="showView('landing')"><img id="publicPlansLogo" class="brand-logo" src="assets/otomeyt-ai-logo.svg" alt="Otomeyt AI"></button></header>
 <div class="planpage">
   <div class="planhead">
     <span class="kicker">Pricing</span>
@@ -147,6 +147,7 @@
       <div class="te-right">
         <button class="te-credit" id="teCredits" type="button" onclick="openCreditsNav()"></button>
         <div class="te-co" id="teCompany"><span>Company</span></div>
+        <button class="te-top-logout" type="button" onclick="signOut()">Log out</button>
         <button class="te-ico te-theme" id="themeToggle" type="button" title="Light theme" aria-label="Switch to light theme" onclick="toggleTheme()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
         <button class="te-ico" title="Notifications" type="button">🔔</button>
       </div>
@@ -167,7 +168,6 @@
       </div>
     </div>
   </div>
-  <div class="app-click-pointer" id="appClickPointer" aria-hidden="true"><i></i><span>Click here</span></div>
   <div class="rzp-back" id="rzpOverlay" onclick="if(event.target===this)closeRazorpay()"></div>
 <div class="gmail-back" id="gstMailOverlay" role="dialog" aria-modal="true" aria-labelledby="gstMailSubject" onclick="if(event.target===this)closeGstMail()"></div>
 <div class="gmail-back" id="referMailOverlay" role="dialog" aria-modal="true" aria-labelledby="referMailSubject" onclick="if(event.target===this)closeReferShare()"></div>
@@ -181,7 +181,7 @@
 <div class="modalback" id="infoModal" onclick="if(event.target===this)closeInfo()"><div class="modal"><button class="modalclose" aria-label="Close" onclick="closeInfo()">×</button><h2 id="infoTitle"></h2><p class="modalcopy" id="infoCopy"></p><div id="infoActions"><button class="primary" onclick="closeInfo()">Got it</button></div></div></div>
 <div class="tour-back" id="tourOverlay"><div class="tour-card" id="tourCard"></div></div>
 <div class="demo-reel" id="demoReel" role="dialog" aria-modal="true" aria-label="TalentEdge product demo"></div>
-<div class="tour-intro open" id="tourIntro" role="dialog" aria-modal="true" aria-labelledby="tourIntroTitle">
+<div class="tour-intro" id="tourIntro" role="dialog" aria-modal="true" aria-labelledby="tourIntroTitle">
   <div class="ti-bg" aria-hidden="true">
     <div class="ti-orb a"></div><div class="ti-orb b"></div><div class="ti-orb c"></div>
     <div class="ti-stars"></div>
