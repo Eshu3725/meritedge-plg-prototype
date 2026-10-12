@@ -3107,7 +3107,7 @@ function toggleDemoMute(){
 function armDemoVoiceUnlock(){
   const once = () => {
     document.removeEventListener("pointerdown", once, true);
-    if(!demoReel || demoReel.ended || tourMuted || demoReel.paused) return;
+    if(!demoReel || demoReel.ended || tourMuted || demoReel.paused || window.speechSynthesis?.speaking || window.speechSynthesis?.pending) return;
     const scene = DEMO_SCENES[demoReel.i];
     const remain = Math.max(900, demoReel.started + demoCueAt(demoReel.i) + scene.ms - Date.now());
     speakTour(demoLine(scene), null, remain);
@@ -3292,32 +3292,28 @@ function speakTourIntro(){
   const start = () => {
     if(gen !== tourIntroGen || tourMuted) return;
     try{ window.speechSynthesis.cancel(); }catch(e){}
-    setTimeout(() => {
-      if(gen !== tourIntroGen || tourMuted) return;
-      const u = new SpeechSynthesisUtterance(line);
-      u.rate = 0.9;
-      u.pitch = 1;
-      u.volume = 1;
-      const v = pickTourVoice();
-      if(v){ u.voice = v; u.lang = v.lang || "en-US"; }
-      else u.lang = "en-US";
-      u.onstart = () => {
-        if(gen !== tourIntroGen) return;
-        introVoiceStarted = true;
-        setIntroSpeakHint(true);
-      };
-      u.onend = () => {
-        if(gen !== tourIntroGen) return;
-        setIntroSpeakHint(false);
-      };
-      try{ window.speechSynthesis.speak(u); }catch(e){}
-    }, 140);
+    if(gen !== tourIntroGen || tourMuted) return;
+    const u = new SpeechSynthesisUtterance(line);
+    u.rate = 0.9;
+    u.pitch = 1;
+    u.volume = 1;
+    const v = pickTourVoice();
+    if(v){ u.voice = v; u.lang = v.lang || "en-US"; }
+    else u.lang = "en-US";
+    u.onstart = () => {
+      if(gen !== tourIntroGen) return;
+      introVoiceStarted = true;
+      setIntroSpeakHint(true);
+    };
+    u.onend = () => {
+      if(gen !== tourIntroGen) return;
+      setIntroSpeakHint(false);
+    };
+    try{ window.speechSynthesis.speak(u); }catch(e){}
   };
   const voices = window.speechSynthesis.getVoices() || [];
   if(voices.length){ start(); return; }
-  const once = () => { try{ window.speechSynthesis.removeEventListener("voiceschanged", once); }catch(e){} start(); };
-  try{ window.speechSynthesis.addEventListener("voiceschanged", once); }catch(e){}
-  setTimeout(once, 700);
+  start();
 }
 function armIntroVoiceUnlock(){
   if(introVoiceUnlock){
@@ -3326,6 +3322,7 @@ function armIntroVoiceUnlock(){
   }
   introVoiceUnlock = () => {
     if(introVoiceStarted) return;
+    if(window.speechSynthesis?.speaking || window.speechSynthesis?.pending) return;
     if(!document.getElementById("tourIntro")?.classList.contains("open")) return;
     speakTourIntro();
   };
@@ -3365,10 +3362,8 @@ function speakTour(text, onDone, durationMs){
   };
   utter.onend = finish;
   utter.onerror = finish;
-  tourVoiceTimer = setTimeout(()=>{
-    if(gen !== tourSpeakGen) return;
-    try{ window.speechSynthesis.speak(utter); }catch(e){ finish(); }
-  }, 60);
+  if(gen !== tourSpeakGen) return;
+  try{ window.speechSynthesis.speak(utter); }catch(e){ finish(); }
 }
 function currentTourVoiceText(){
   if(!tour) return "";
